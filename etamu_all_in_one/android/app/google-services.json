@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "74487002543",
+    "project_id": "etamu-all-in-one",
+    "storage_bucket": "etamu-all-in-one.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74487002543:android:46c974843028453e9feb5a",
+        "android_client_info": {
+          "package_name": "com.example.etamu_all_in_one"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp45D5j-OSEprnxHXvehjSAfCfKh0vKyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
