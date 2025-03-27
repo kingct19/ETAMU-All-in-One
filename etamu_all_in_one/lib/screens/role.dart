@@ -1,42 +1,29 @@
 import 'package:flutter/material.dart';
 
-class RolePage extends StatelessWidget {
-  const RolePage({super.key});
-
-  void navigateToNext(BuildContext context, String role) {
-    if (role == 'Guest') {
-      Navigator.pushNamed(context, '/guest');
-    } else {
-      Navigator.pushNamed(context, '/login', arguments: role);
-    }
-  }
+class RoleSelectionPage extends StatelessWidget {
+  const RoleSelectionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Define your school colors
-    const Color purple = Color(0xFF4B0082); // Deep purple
-    const Color gold = Color(0xFFFFD700);   // Gold
+    const Color purple = Color(0xFF4B0082); // ETAMU Purple
+    const Color gold = Color(0xFFFFD700);   // ETAMU Gold
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: purple,
-        title: const Text('Select Your Role'),
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: gold,
-        ),
-      ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/images/etamu_logo.jpg',
+                width: 120,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 24),
               Text(
-                'Welcome to TAMUC!',
+                'Welcome to ETAMU!',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
@@ -51,12 +38,12 @@ class RolePage extends StatelessWidget {
                   color: Colors.grey[700],
                 ),
               ),
-              const SizedBox(height: 40),
-              _buildRoleButton(context, 'Student', purple, gold),
-              const SizedBox(height: 20),
-              _buildRoleButton(context, 'Faculty', purple, gold),
-              const SizedBox(height: 20),
-              _buildRoleButton(context, 'Guest', purple, gold),
+              const SizedBox(height: 32),
+              _buildRoleButton(context, 'Student', purple, gold, '/login'),
+              const SizedBox(height: 16),
+              _buildRoleButton(context, 'Faculty', purple, gold, '/login'),
+              const SizedBox(height: 16),
+              _buildRoleButton(context, 'Guest', gold, purple, '/guest'),
             ],
           ),
         ),
@@ -64,25 +51,26 @@ class RolePage extends StatelessWidget {
     );
   }
 
-  Widget _buildRoleButton(BuildContext context, String role, Color bgColor, Color textColor) {
+  Widget _buildRoleButton(BuildContext context, String label, Color bgColor, Color textColor, String route) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () => navigateToNext(context, role),
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 6,
         ),
+        onPressed: () {
+          Navigator.pushNamed(context, route);
+        },
         child: Text(
-          role,
+          label,
           style: TextStyle(
-            color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
+            color: textColor,
           ),
         ),
       ),
