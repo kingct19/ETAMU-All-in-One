@@ -19,8 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ETAMU All-in-One',
       theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
+        '/': (context) => const RoleSelectionPage(), // 👈 New route
         '/login': (context) => LoginScreen(),
         '/home': (context) => Home(),
       },
