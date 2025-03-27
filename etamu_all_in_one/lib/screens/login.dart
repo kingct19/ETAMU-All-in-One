@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
   final String role;
@@ -15,6 +19,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -24,7 +33,15 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      Navigator.pushReplacementNamed(context, '/home');
+
+      // Navigate to different dashboards based on role
+      if (widget.role.toLowerCase() == 'faculty') {
+        Navigator.pushReplacementNamed(context, '/faculty_home');
+      } else if (widget.role.toLowerCase() == 'student') {
+        Navigator.pushReplacementNamed(context, '/student_home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home'); // fallback
+      }
     } catch (e) {
       print('Login error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,7 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
     const Color skyBlue = Color(0xFFCCE7FF);
     final Size screenSize = MediaQuery.of(context).size;
 
-    // Use different hints for student vs faculty
     final bool isFaculty = widget.role.toLowerCase() == 'faculty';
     final String label = isFaculty ? 'Email' : 'Username (CWID)';
     final String hint = isFaculty ? 'faculty@example.edu' : '00000000';
@@ -64,14 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: screenSize.width < 500 ? 300 : 350,
+              maxWidth: screenSize.width < 500 ? 280 : 320,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/etamu_logo.jpg',
-                  height: screenSize.width * 0.35,
+                  height: screenSize.width * 0.38,
                 ),
                 const SizedBox(height: 24),
                 const Text(
@@ -94,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: hint,
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
@@ -108,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
@@ -123,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             foregroundColor: navyBlue,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           onPressed: _login,

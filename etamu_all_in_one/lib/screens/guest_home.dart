@@ -1,83 +1,165 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class GuestHomePage extends StatelessWidget {
+class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
+
+  @override
+  State<GuestHomePage> createState() => _GuestHomePageState();
+}
+
+class _GuestHomePageState extends State<GuestHomePage> {
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse('https://www.tamuc.edu'));
+  }
 
   @override
   Widget build(BuildContext context) {
     const Color navyBlue = Color(0xFF002147);
     const Color gold = Color(0xFFFFD700);
+    const Color lightGray = Color(0xFFF1F1F1);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: navyBlue,
         title: const Text(
-          'Welcome Guest',
+          'ETAMU Guest Portal',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'BreeSerif',
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(24),
-        width: double.infinity,
-        color: Colors.white,
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Explore ETAMU!',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'BreeSerif',
-                color: navyBlue,
+            // 🌐 Embedded WebView
+            SizedBox(
+              height: 300,
+              child: WebViewWidget(controller: _controller),
+            ),
+            const SizedBox(height: 16),
+
+            // 🎥 Discover ETAMU Section
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '🎥 Discover ETAMU',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'BreeSerif',
+                      color: navyBlue,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildVideoCard(
+                    title: 'Why Choose ETAMU?',
+                    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+                  ),
+                  const SizedBox(height: 12),
+                  _buildVideoCard(
+                    title: 'Campus Life at ETAMU',
+                    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'As a guest, you can view public events, explore the campus, or contact us.',
-              style: TextStyle(fontSize: 16),
+
+            // 📰 Awards & Recognition Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(horizontal: 8),
+                backgroundColor: lightGray,
+                collapsedBackgroundColor: lightGray,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                title: const Text(
+                  '🏆 Recent Awards & Recognition',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BreeSerif',
+                    color: navyBlue,
+                  ),
+                ),
+                children: const [
+                  ListTile(
+                    title: Text('• ETAMU wins National Research Excellence Award'),
+                  ),
+                  ListTile(
+                    title: Text('• Student robotics team ranked top 5 in Texas'),
+                  ),
+                  ListTile(
+                    title: Text('• Faculty wins NSF innovation grant'),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 32),
-            _buildCard(context, Icons.map, 'Campus Map', () {}),
-            const SizedBox(height: 16),
-            _buildCard(context, Icons.event, 'Upcoming Events', () {}),
-            const SizedBox(height: 16),
-            _buildCard(context, Icons.email, 'Contact Admissions', () {}),
+            const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCard(BuildContext context, IconData icon, String title, VoidCallback onTap) {
+  Widget _buildVideoCard({
+    required String title,
+    required String url,
+    required String thumbnail,
+  }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      },
       child: Container(
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFCCE7FF), // light skyblue tone
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFF002147)),
           borderRadius: BorderRadius.circular(12),
           boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 6,
-              offset: Offset(2, 2),
-            ),
+              offset: Offset(0, 3),
+            )
           ],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 28, color: Color(0xFF002147)),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontFamily: 'BreeSerif',
+            ClipRRect(
+              borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+              child: Image.network(
+                thumbnail,
+                width: 120,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'BreeSerif',
+                  fontSize: 16,
+                ),
               ),
             ),
           ],
