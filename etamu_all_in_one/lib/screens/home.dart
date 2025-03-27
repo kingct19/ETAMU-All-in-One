@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class Home extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  const Home({super.key});
+
   Future<void> _logout(BuildContext context) async {
     await _auth.signOut();
     Navigator.pushReplacementNamed(context, '/login');
