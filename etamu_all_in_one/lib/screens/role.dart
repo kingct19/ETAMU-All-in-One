@@ -41,41 +41,54 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> with SingleTicker
     final double buttonFontSize = screenWidth < 400 ? 16 : 18;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Image.asset(
-                    'assets/images/etamu_logo.jpg',
-                    width: logoWidth,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Welcome to ETAMU!',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: navyBlue,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                _buildRoleButton(context, 'Student', navyBlue, gold, '/login', buttonFontSize),
-                const SizedBox(height: 16),
-                _buildRoleButton(context, 'Faculty', navyBlue, gold, '/login', buttonFontSize),
-                const SizedBox(height: 16),
-                _buildRoleButton(context, 'Guest', gold, navyBlue, '/guest', buttonFontSize),
-              ],
+      body: Stack(
+        children: [
+          // 🎨 Faded background image
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.15,
+              child: Image.asset(
+                'assets/images/login_bg.jpg',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: Image.asset(
+                        'assets/images/etamu_logo.jpg',
+                        width: logoWidth,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Welcome to ETAMU!',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: navyBlue,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    _buildRoleButton(context, 'Student', navyBlue, gold, '/login', buttonFontSize),
+                    const SizedBox(height: 16),
+                    _buildRoleButton(context, 'Faculty', navyBlue, gold, '/login', buttonFontSize),
+                    const SizedBox(height: 16),
+                    _buildRoleButton(context, 'Guest', gold, navyBlue, '/guest', buttonFontSize),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

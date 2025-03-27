@@ -25,3 +25,4 @@ flutter:
 
   assets:
     - assets/images/etamu_logo.jpg
+    - assets/images/login_bg.jpg
