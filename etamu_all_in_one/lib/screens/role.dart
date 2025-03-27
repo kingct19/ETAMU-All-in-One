@@ -1,52 +1,24 @@
 import 'package:flutter/material.dart';
 
-class RoleSelectionPage extends StatefulWidget {
+class RoleSelectionPage extends StatelessWidget {
   const RoleSelectionPage({super.key});
-
-  @override
-  State<RoleSelectionPage> createState() => _RoleSelectionPageState();
-}
-
-class _RoleSelectionPageState extends State<RoleSelectionPage> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    )..forward();
-
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     const Color navyBlue = Color(0xFF002147); // ETAMU Navy Blue
     const Color gold = Color(0xFFFFD700);     // ETAMU Gold
 
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double logoWidth = screenWidth * 0.4; // Responsive logo size
-    final double buttonFontSize = screenWidth < 400 ? 16 : 18;
+    final Size screenSize = MediaQuery.of(context).size;
+    final double logoWidth = screenSize.width * 0.4;
+    final double buttonFontSize = screenSize.width < 400 ? 16 : 18;
 
     return Scaffold(
       body: Stack(
         children: [
-          // 🎨 Faded background image
+          // 🎨 Background image with dark overlay
           Positioned.fill(
-            child: Opacity(
-              opacity: 0.15,
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken),
               child: Image.asset(
                 'assets/images/login_bg.jpg',
                 fit: BoxFit.cover,
@@ -60,22 +32,10 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> with SingleTicker
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Image.asset(
-                        'assets/images/etamu_logo.jpg',
-                        width: logoWidth,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Welcome to ETAMU!',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: navyBlue,
-                      ),
+                    Image.asset(
+                      'assets/images/etamu_logo.jpg',
+                      width: logoWidth,
+                      fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 32),
                     _buildRoleButton(context, 'Student', navyBlue, gold, '/login', buttonFontSize),
@@ -112,6 +72,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> with SingleTicker
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.w600,
+            fontFamily: 'BreeSerif',
             color: textColor,
           ),
         ),
