@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:etamu_all_in_one/screens/login.dart'; // Ensure this import exists
 
 class RoleSelectionPage extends StatelessWidget {
   const RoleSelectionPage({super.key});
@@ -38,11 +39,11 @@ class RoleSelectionPage extends StatelessWidget {
                       fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 32),
-                    _buildRoleButton(context, 'Student', navyBlue, gold, '/login', buttonFontSize),
+                    _buildRoleButton(context, 'Student', navyBlue, gold, 'student', buttonFontSize),
                     const SizedBox(height: 16),
-                    _buildRoleButton(context, 'Faculty', navyBlue, gold, '/login', buttonFontSize),
+                    _buildRoleButton(context, 'Faculty', navyBlue, gold, 'faculty', buttonFontSize),
                     const SizedBox(height: 16),
-                    _buildRoleButton(context, 'Guest', gold, navyBlue, '/guest', buttonFontSize),
+                    _buildRoleButton(context, 'Guest', gold, navyBlue, 'guest', buttonFontSize),
                   ],
                 ),
               ),
@@ -53,7 +54,7 @@ class RoleSelectionPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRoleButton(BuildContext context, String label, Color bgColor, Color textColor, String route, double fontSize) {
+  Widget _buildRoleButton(BuildContext context, String label, Color bgColor, Color textColor, String role, double fontSize) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -65,7 +66,16 @@ class RoleSelectionPage extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          Navigator.pushNamed(context, route);
+          if (role == 'guest') {
+            Navigator.pushNamed(context, '/guest');
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LoginScreen(role: role),
+              ),
+            );
+          }
         },
         child: Text(
           label,
