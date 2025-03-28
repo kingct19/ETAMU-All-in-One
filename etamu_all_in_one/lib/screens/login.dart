@@ -33,19 +33,24 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
+      if (!mounted) return;
+
       if (widget.role.toLowerCase() == 'faculty') {
         Navigator.pushReplacementNamed(context, '/faculty_home');
       } else {
         Navigator.pushReplacementNamed(context, '/student_home');
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login failed. Please check your credentials.')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -54,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
     const Color navyBlue = Color(0xFF002147);
     const Color gold = Color(0xFFFFD700);
     const Color skyBlue = Color(0xFFCCE7FF);
+
     final bool isFaculty = widget.role.toLowerCase() == 'faculty';
     final String label = isFaculty ? 'Email' : 'Username (CWID)';
     final String hint = isFaculty ? 'faculty@example.edu' : '00000000';
@@ -137,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: () {}, // Reset password route
+                onPressed: () {},
                 child: const Text(
                   '› Reset your password?',
                   style: TextStyle(fontFamily: 'BreeSerif'),
@@ -145,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               if (!isFaculty)
                 TextButton(
-                  onPressed: () {}, // Forgot CWID route
+                  onPressed: () {},
                   child: const Text(
                     '› Forgot your CWID?',
                     style: TextStyle(fontFamily: 'BreeSerif'),
