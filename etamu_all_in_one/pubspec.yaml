@@ -34,3 +34,6 @@ flutter:
     - family: BreeSerif
       fonts:
         - asset: assets/fonts/BreeSerif-Regular.ttf
+    - family: Pacifico
+      fonts:
+        - asset: assets/fonts/Pacifico-Regular.ttf

@@ -16,16 +16,21 @@ class RoleSelectionPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // 🎨 Background image with dark overlay
+          // 🎨 Background image with dark overlay (fixed deprecated .withOpacity)
           Positioned.fill(
             child: ColorFiltered(
-              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken),
+              colorFilter: ColorFilter.mode(
+                const Color.fromARGB(153, 0, 0, 0), // 0.6 opacity
+                BlendMode.darken,
+              ),
               child: Image.asset(
                 'assets/images/login_bg.jpg',
                 fit: BoxFit.cover,
               ),
             ),
           ),
+
+          // 🔘 Central content
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -33,11 +38,11 @@ class RoleSelectionPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 🖋️ myLEO™
+                    // 🖋️ myLEO™ branding
                     const Text(
                       'myLEO™',
                       style: TextStyle(
-                        fontFamily: 'Pacifico', // Use cursive-style font
+                        fontFamily: 'Pacifico', // Make sure 'Pacifico' font is in pubspec.yaml
                         fontSize: 36,
                         fontWeight: FontWeight.w900,
                         color: gold,
@@ -53,7 +58,7 @@ class RoleSelectionPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // 🎓 Buttons
+                    // 🎓 Role Buttons
                     _buildRoleButton(context, 'Student', navyBlue, gold, 'student', buttonFontSize),
                     const SizedBox(height: 16),
                     _buildRoleButton(context, 'Faculty', navyBlue, gold, 'faculty', buttonFontSize),
@@ -69,7 +74,14 @@ class RoleSelectionPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRoleButton(BuildContext context, String label, Color bgColor, Color textColor, String role, double fontSize) {
+  Widget _buildRoleButton(
+    BuildContext context,
+    String label,
+    Color bgColor,
+    Color textColor,
+    String role,
+    double fontSize,
+  ) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
