@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,10 +12,15 @@ class GuestHomePage extends StatefulWidget {
 
 class _GuestHomePageState extends State<GuestHomePage> {
   late final WebViewController _controller;
+  final DraggableScrollableController _draggableController = DraggableScrollableController();
+  bool _bannersVisible = true;
 
   @override
   void initState() {
     super.initState();
+
+    // ✅ No need for WebViewPlatform.instance in version 3.16.9
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse('https://www.tamuc.edu'));
@@ -27,91 +33,102 @@ class _GuestHomePageState extends State<GuestHomePage> {
     const Color lightGray = Color(0xFFF1F1F1);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: navyBlue,
-        title: const Text(
-          'ETAMU Guest Portal',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'BreeSerif',
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // 🌐 Embedded WebView
-            SizedBox(
-              height: 300,
-              child: WebViewWidget(controller: _controller),
-            ),
-            const SizedBox(height: 16),
+      body: Stack(
+        children: [
+          // 🌐 Fullscreen school website
+          Positioned.fill(child: WebViewWidget(controller: _controller)),
 
-            // 🎥 Discover ETAMU Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '🎥 Discover ETAMU',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BreeSerif',
-                      color: navyBlue,
-                    ),
+          // 👇 Floating banner sheet
+          if (_bannersVisible)
+            DraggableScrollableSheet(
+              controller: _draggableController,
+              initialChildSize: 0.35,
+              minChildSize: 0.1,
+              maxChildSize: 0.85,
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, -2),
+                      )
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  _buildVideoCard(
-                    title: 'Why Choose ETAMU?',
-                    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            '🎥 Discover ETAMU',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'BreeSerif',
+                              color: navyBlue,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: navyBlue),
+                            onPressed: () {
+                              setState(() => _bannersVisible = false);
+                            },
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      _buildVideoCard(
+                        title: 'Why Choose ETAMU?',
+                        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+                      ),
+                      const SizedBox(height: 12),
+                      _buildVideoCard(
+                        title: 'Campus Life at ETAMU',
+                        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+                      ),
+                      const SizedBox(height: 24),
+                      ExpansionTile(
+                        tilePadding: const EdgeInsets.symmetric(horizontal: 8),
+                        backgroundColor: lightGray,
+                        collapsedBackgroundColor: lightGray,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        title: const Text(
+                          '🏆 Recent Awards & Recognition',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'BreeSerif',
+                            color: navyBlue,
+                          ),
+                        ),
+                        children: const [
+                          ListTile(
+                            title: Text('• ETAMU wins National Research Excellence Award'),
+                          ),
+                          ListTile(
+                            title: Text('• Student robotics team ranked top 5 in Texas'),
+                          ),
+                          ListTile(
+                            title: Text('• Faculty wins NSF innovation grant'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  _buildVideoCard(
-                    title: 'Campus Life at ETAMU',
-                    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-                  ),
-                ],
-              ),
+                );
+              },
             ),
-
-            // 📰 Awards & Recognition Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(horizontal: 8),
-                backgroundColor: lightGray,
-                collapsedBackgroundColor: lightGray,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                title: const Text(
-                  '🏆 Recent Awards & Recognition',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'BreeSerif',
-                    color: navyBlue,
-                  ),
-                ),
-                children: const [
-                  ListTile(
-                    title: Text('• ETAMU wins National Research Excellence Award'),
-                  ),
-                  ListTile(
-                    title: Text('• Student robotics team ranked top 5 in Texas'),
-                  ),
-                  ListTile(
-                    title: Text('• Faculty wins NSF innovation grant'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -129,6 +146,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
         }
       },
       child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: const Color(0xFF002147)),
@@ -168,3 +186,4 @@ class _GuestHomePageState extends State<GuestHomePage> {
     );
   }
 }
+

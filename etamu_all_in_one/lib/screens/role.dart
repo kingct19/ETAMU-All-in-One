@@ -33,12 +33,27 @@ class RoleSelectionPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // 🖋️ myLEO™
+                    const Text(
+                      'myLEO™',
+                      style: TextStyle(
+                        fontFamily: 'Pacifico', // Use cursive-style font
+                        fontSize: 36,
+                        fontWeight: FontWeight.w900,
+                        color: gold,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 🦁 ETAMU Logo
                     Image.asset(
                       'assets/images/etamu_logo.jpg',
                       width: logoWidth,
                       fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 32),
+
+                    // 🎓 Buttons
                     _buildRoleButton(context, 'Student', navyBlue, gold, 'student', buttonFontSize),
                     const SizedBox(height: 16),
                     _buildRoleButton(context, 'Faculty', navyBlue, gold, 'faculty', buttonFontSize),

@@ -29,3 +29,8 @@ flutter:
   assets:
     - assets/images/etamu_logo.jpg
     - assets/images/login_bg.jpg
+
+  fonts:
+    - family: BreeSerif
+      fonts:
+        - asset: assets/fonts/BreeSerif-Regular.ttf
