@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
@@ -11,8 +11,8 @@ class GuestHomePage extends StatefulWidget {
 
 class _GuestHomePageState extends State<GuestHomePage> {
   late final WebViewController _controller;
-  final DraggableScrollableController _draggableController = DraggableScrollableController();
-  bool _bannersVisible = true;
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _shortcutsKey = GlobalKey();
 
   @override
   void initState() {
@@ -22,120 +22,80 @@ class _GuestHomePageState extends State<GuestHomePage> {
       ..loadRequest(Uri.parse('https://www.tamuc.edu'));
   }
 
+  void _scrollToShortcuts() {
+    // Scroll to the shortcut section
+    Scrollable.ensureVisible(
+      _shortcutsKey.currentContext!,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const Color navyBlue = Color(0xFF002147);
-    const Color lightGray = Color(0xFFF1F1F1);
+    const Color gold = Color(0xFFFFD700);
 
     return Scaffold(
       body: Stack(
         children: [
-          // 🌐 Fullscreen school website
-          Positioned.fill(child: WebViewWidget(controller: _controller)),
-
-          // 👇 Floating banner sheet
-          if (_bannersVisible)
-            DraggableScrollableSheet(
-              controller: _draggableController,
-              initialChildSize: 0.35,
-              minChildSize: 0.1,
-              maxChildSize: 0.85,
-              builder: (context, scrollController) {
-                return Container(
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: WebViewWidget(controller: _controller),
+                ),
+                Container(
+                  key: _shortcutsKey,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26,
+                        color: Colors.black12,
                         blurRadius: 6,
                         offset: Offset(0, -2),
                       )
                     ],
                   ),
-                  child: ListView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.all(16),
+                  child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            '🎥 Discover ETAMU',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'BreeSerif',
-                              color: navyBlue,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close, color: navyBlue),
-                            onPressed: () {
-                              setState(() => _bannersVisible = false);
-                            },
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      _buildVideoCard(
-                        title: 'Why Choose ETAMU?',
-                        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-                      ),
-                      const SizedBox(height: 12),
-                      _buildVideoCard(
-                        title: 'Campus Life at ETAMU',
-                        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-                      ),
-                      const SizedBox(height: 24),
-                      ExpansionTile(
-                        tilePadding: const EdgeInsets.symmetric(horizontal: 8),
-                        backgroundColor: lightGray,
-                        collapsedBackgroundColor: lightGray,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      const Text(
+                        '🚀 Quick Links',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'BreeSerif',
+                          color: navyBlue,
                         ),
-                        title: const Text(
-                          '🏆 Recent Awards & Recognition',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'BreeSerif',
-                            color: navyBlue,
-                          ),
-                        ),
-                        children: const [
-                          ListTile(
-                            title: Text('• ETAMU wins National Research Excellence Award'),
-                          ),
-                          ListTile(
-                            title: Text('• Student robotics team ranked top 5 in Texas'),
-                          ),
-                          ListTile(
-                            title: Text('• Faculty wins NSF innovation grant'),
-                          ),
-                        ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        children: _shortcuts.map(_buildShortcutCard).toList(),
+                      ),
                     ],
                   ),
-                );
-              },
+                ),
+              ],
             ),
-
-          // ☰ Floating Menu Button to toggle banner
+          ),
           Positioned(
             bottom: 24,
             right: 24,
             child: FloatingActionButton.extended(
+              onPressed: _scrollToShortcuts,
               backgroundColor: navyBlue,
               foregroundColor: Colors.white,
-              onPressed: () {
-                setState(() => _bannersVisible = !_bannersVisible);
-              },
-              icon: Icon(_bannersVisible ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
-              label: Text(_bannersVisible ? 'Hide Info' : 'Show Info'),
+              label: const Text('Quick Links'),
+              icon: const Icon(Icons.arrow_downward),
             ),
           ),
         ],
@@ -143,51 +103,32 @@ class _GuestHomePageState extends State<GuestHomePage> {
     );
   }
 
-  Widget _buildVideoCard({
-    required String title,
-    required String url,
-    required String thumbnail,
-  }) {
+  Widget _buildShortcutCard(Map<String, dynamic> item) {
     return GestureDetector(
       onTap: () async {
-        final uri = Uri.parse(url);
+        final uri = Uri.parse(item['url']);
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         }
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: const Color(0xFF002147)),
+          color: const Color(0xFFF9F9F9),
+          border: Border.all(color: const Color(0xFF002147), width: 1),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 6,
-              offset: Offset(0, 3),
-            )
-          ],
         ),
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
-              child: Image.network(
-                thumbnail,
-                width: 120,
-                height: 80,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontFamily: 'BreeSerif',
-                  fontSize: 16,
-                ),
+            Icon(item['icon'], size: 36, color: const Color(0xFF002147)),
+            const SizedBox(height: 10),
+            Text(
+              item['title'],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontFamily: 'BreeSerif',
               ),
             ),
           ],
@@ -195,4 +136,47 @@ class _GuestHomePageState extends State<GuestHomePage> {
       ),
     );
   }
+
+  final List<Map<String, dynamic>> _shortcuts = [
+    {
+      'title': 'Apply to ETAMU',
+      'url': 'https://www.tamuc.edu/apply-now/',
+      'icon': Icons.school,
+    },
+    {
+      'title': 'Campus Life Virtual Tour',
+      'url': 'https://www.tamuc.edu/map/',
+      'icon': Icons.map,
+    },
+    {
+      'title': 'Parking',
+      'url': 'https://www.tamuc.edu/parking/',
+      'icon': Icons.local_parking,
+    },
+    {
+      'title': 'Lion Athletics',
+      'url': 'https://lionathletics.com/',
+      'icon': Icons.sports_soccer,
+    },
+    {
+      'title': 'Campus Rec',
+      'url': 'https://www.tamuc.edu/campusrec/',
+      'icon': Icons.fitness_center,
+    },
+    {
+      'title': 'Academic Calendar',
+      'url': 'https://www.tamuc.edu/registrar/academic-calendar/',
+      'icon': Icons.calendar_today,
+    },
+    {
+      'title': 'Contact Directory',
+      'url': 'https://www.tamuc.edu/contact-us/',
+      'icon': Icons.contact_page,
+    },
+    {
+      'title': 'Lion Safe App',
+      'url': 'https://apps.apple.com/us/app/lion-safe/id1434558723',
+      'icon': Icons.shield,
+    },
+  ];
 }
