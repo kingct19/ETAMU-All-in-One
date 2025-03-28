@@ -41,14 +41,7 @@ class Home extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Text(
-          welcomeMessage,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'BreeSerif',
-          ),
-        ),
+        child: Text('Welcome, $email!'),
       ),
     );
   }
