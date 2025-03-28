@@ -20,12 +20,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ETAMU All-in-One',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'BreeSerif',
+      ),
       initialRoute: '/',
       routes: {
         '/': (context) => const RoleSelectionPage(),
-        '/login': (context) => const LoginScreen(),
-        // Removed '/home' since Home now requires a role.
+        '/login': (context) => LoginScreen(), // 🔁 Removed `const` due to dynamic role
         '/student_home': (context) => Home(role: 'student'),
         '/faculty_home': (context) => Home(role: 'faculty'),
         '/guest': (context) => const GuestHomePage(),
