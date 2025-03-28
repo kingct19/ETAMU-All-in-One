@@ -13,6 +13,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
   late final WebViewController _controller;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _shortcutsKey = GlobalKey();
+  bool _scrolledToShortcuts = false;
 
   @override
   void initState() {
@@ -22,19 +23,28 @@ class _GuestHomePageState extends State<GuestHomePage> {
       ..loadRequest(Uri.parse('https://www.tamuc.edu'));
   }
 
-  void _scrollToShortcuts() {
-    // Scroll to the shortcut section
-    Scrollable.ensureVisible(
-      _shortcutsKey.currentContext!,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOut,
-    );
+  void _toggleScroll() {
+    if (_scrolledToShortcuts) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Scrollable.ensureVisible(
+        _shortcutsKey.currentContext!,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+    setState(() => _scrolledToShortcuts = !_scrolledToShortcuts);
   }
 
   @override
   Widget build(BuildContext context) {
     const Color navyBlue = Color(0xFF002147);
     const Color gold = Color(0xFFFFD700);
+    const Color lightBackground = Color(0xFFF9F9F9);
 
     return Scaffold(
       body: Stack(
@@ -52,21 +62,22 @@ class _GuestHomePageState extends State<GuestHomePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, -2),
+                        blurRadius: 8,
+                        offset: Offset(0, -4),
                       )
                     ],
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         '🚀 Quick Links',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'BreeSerif',
                           color: navyBlue,
@@ -91,11 +102,11 @@ class _GuestHomePageState extends State<GuestHomePage> {
             bottom: 24,
             right: 24,
             child: FloatingActionButton.extended(
-              onPressed: _scrollToShortcuts,
+              onPressed: _toggleScroll,
               backgroundColor: navyBlue,
               foregroundColor: Colors.white,
-              label: const Text('Quick Links'),
-              icon: const Icon(Icons.arrow_downward),
+              label: Text(_scrolledToShortcuts ? 'Back to Website' : 'Quick Links'),
+              icon: Icon(_scrolledToShortcuts ? Icons.arrow_upward : Icons.arrow_downward),
             ),
           ),
         ],
@@ -104,19 +115,21 @@ class _GuestHomePageState extends State<GuestHomePage> {
   }
 
   Widget _buildShortcutCard(Map<String, dynamic> item) {
-    return GestureDetector(
+    return InkWell(
       onTap: () async {
         final uri = Uri.parse(item['url']);
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         }
       },
+      borderRadius: BorderRadius.circular(12),
+      splashColor: Colors.amber.withOpacity(0.2),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF9F9F9),
-          border: Border.all(color: const Color(0xFF002147), width: 1),
+          color: const Color(0xFFF5F6FA),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF002147), width: 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
