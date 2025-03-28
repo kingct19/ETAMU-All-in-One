@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'guest_webview.dart';
 
 class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
@@ -43,7 +43,6 @@ class _GuestHomePageState extends State<GuestHomePage> {
   @override
   Widget build(BuildContext context) {
     const Color navyBlue = Color(0xFF002147);
-    const Color gold = Color(0xFFFFD700);
     const Color lightBackground = Color(0xFFF9F9F9);
 
     return Scaffold(
@@ -116,11 +115,13 @@ class _GuestHomePageState extends State<GuestHomePage> {
 
   Widget _buildShortcutCard(Map<String, dynamic> item) {
     return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(item['url']);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => GuestWebViewPage(title: item['title'], url: item['url']),
+          ),
+        );
       },
       borderRadius: BorderRadius.circular(12),
       splashColor: Colors.amber.withOpacity(0.2),
