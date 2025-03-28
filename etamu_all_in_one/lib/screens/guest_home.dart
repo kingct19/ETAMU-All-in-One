@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,9 +17,6 @@ class _GuestHomePageState extends State<GuestHomePage> {
   @override
   void initState() {
     super.initState();
-
-    // ✅ No need for WebViewPlatform.instance in version 3.16.9
-
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse('https://www.tamuc.edu'));
@@ -29,7 +25,6 @@ class _GuestHomePageState extends State<GuestHomePage> {
   @override
   Widget build(BuildContext context) {
     const Color navyBlue = Color(0xFF002147);
-    const Color gold = Color(0xFFFFD700);
     const Color lightGray = Color(0xFFF1F1F1);
 
     return Scaffold(
@@ -128,6 +123,21 @@ class _GuestHomePageState extends State<GuestHomePage> {
                 );
               },
             ),
+
+          // ☰ Floating Menu Button to toggle banner
+          Positioned(
+            bottom: 24,
+            right: 24,
+            child: FloatingActionButton.extended(
+              backgroundColor: navyBlue,
+              foregroundColor: Colors.white,
+              onPressed: () {
+                setState(() => _bannersVisible = !_bannersVisible);
+              },
+              icon: Icon(_bannersVisible ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
+              label: Text(_bannersVisible ? 'Hide Info' : 'Show Info'),
+            ),
+          ),
         ],
       ),
     );
@@ -186,4 +196,3 @@ class _GuestHomePageState extends State<GuestHomePage> {
     );
   }
 }
-
