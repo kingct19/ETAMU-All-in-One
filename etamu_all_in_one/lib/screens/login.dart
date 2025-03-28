@@ -35,11 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      if (widget.role.toLowerCase() == 'faculty') {
-        Navigator.pushReplacementNamed(context, '/faculty_home');
-      } else {
-        Navigator.pushReplacementNamed(context, '/student_home');
-      }
+      final destination = widget.role.toLowerCase() == 'faculty'
+          ? '/faculty_home'
+          : '/student_home';
+
+      Navigator.pushReplacementNamed(context, destination);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Sign in to myLEO™',
+                'Sign in to myLEO',
                 style: TextStyle(
                   fontFamily: 'BreeSerif',
                   fontSize: 26,
