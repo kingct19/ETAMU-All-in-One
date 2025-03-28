@@ -16,7 +16,7 @@ class RoleSelectionPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // 🎨 Background image with dark overlay (fixed deprecated .withOpacity)
+          // 🎨 Background image with dark overlay
           Positioned.fill(
             child: ColorFiltered(
               colorFilter: ColorFilter.mode(
@@ -38,11 +38,11 @@ class RoleSelectionPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 🖋️ myLEO™ branding
+                    // 🖋️ myLEO title
                     const Text(
-                      'myLEO™',
+                      'myLEO',
                       style: TextStyle(
-                        fontFamily: 'Pacifico', // Make sure 'Pacifico' font is in pubspec.yaml
+                        fontFamily: 'BreeSerif',
                         fontSize: 36,
                         fontWeight: FontWeight.w900,
                         color: gold,
