@@ -15,10 +15,39 @@ class GuestWebViewPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontFamily: 'BreeSerif')),
         backgroundColor: const Color(0xFF002147),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFFFD700), size: 28),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Color(0xFFFFD700),
+            fontFamily: 'BreeSerif',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      body: WebViewWidget(controller: controller),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: controller),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton(
+              backgroundColor: const Color(0xFF002147),
+              onPressed: () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+              },
+              child: const Icon(Icons.arrow_back, color: Color(0xFFFFD700)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
