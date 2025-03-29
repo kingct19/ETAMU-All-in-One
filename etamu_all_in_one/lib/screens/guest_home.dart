@@ -24,19 +24,12 @@ class _GuestHomePageState extends State<GuestHomePage> {
   }
 
   void _toggleScroll() {
-    if (_scrolledToShortcuts) {
-      _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      Scrollable.ensureVisible(
-        _shortcutsKey.currentContext!,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
+    final double scrollTarget = _scrolledToShortcuts ? 0 : MediaQuery.of(context).size.height;
+    _scrollController.animateTo(
+      scrollTarget,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
     setState(() => _scrolledToShortcuts = !_scrolledToShortcuts);
   }
 
@@ -44,7 +37,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
   Widget build(BuildContext context) {
     const navyBlue = Color(0xFF002147);
     const gold = Color(0xFFFFD700);
-    const background = Color(0xFF011B33);
+    const darkCard = Color(0xFF08335B);
 
     return Scaffold(
       body: Stack(
@@ -61,7 +54,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
                   key: _shortcutsKey,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   decoration: const BoxDecoration(
-                    color: background,
+                    color: navyBlue,
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     boxShadow: [
                       BoxShadow(
@@ -120,10 +113,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => GuestWebViewPage(
-              title: item['title'],
-              url: item['url'],
-            ),
+            builder: (_) => GuestWebViewPage(title: item['title'], url: item['url']),
           ),
         );
       },
@@ -176,6 +166,26 @@ class _GuestHomePageState extends State<GuestHomePage> {
       'title': 'Campus Life Tour',
       'url': 'https://www.tamuc.edu/map/',
       'icon': Icons.map,
+    },
+    {
+      'title': 'Parking',
+      'url': 'https://www.tamuc.edu/parking/',
+      'icon': Icons.local_parking,
+    },
+    {
+      'title': 'Lion Athletics',
+      'url': 'https://lionathletics.com/',
+      'icon': Icons.sports_soccer,
+    },
+    {
+      'title': 'Campus Rec',
+      'url': 'https://www.tamuc.edu/campusrec/',
+      'icon': Icons.fitness_center,
+    },
+    {
+      'title': 'Lion Safe App',
+      'url': 'https://apps.apple.com/us/app/lion-safe/id1434558723',
+      'icon': Icons.shield,
     },
   ];
 }
