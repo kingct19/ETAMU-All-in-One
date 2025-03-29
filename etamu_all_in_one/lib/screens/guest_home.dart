@@ -42,8 +42,9 @@ class _GuestHomePageState extends State<GuestHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color navyBlue = Color(0xFF002147);
-    const Color lightBackground = Color(0xFFF9F9F9);
+    const navyBlue = Color(0xFF002147);
+    const gold = Color(0xFFFFD700);
+    const background = Color(0xFF011B33);
 
     return Scaffold(
       body: Stack(
@@ -60,11 +61,11 @@ class _GuestHomePageState extends State<GuestHomePage> {
                   key: _shortcutsKey,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: background,
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black12,
+                        color: Colors.black26,
                         blurRadius: 8,
                         offset: Offset(0, -4),
                       )
@@ -79,7 +80,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'BreeSerif',
-                          color: navyBlue,
+                          color: gold,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -119,7 +120,10 @@ class _GuestHomePageState extends State<GuestHomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => GuestWebViewPage(title: item['title'], url: item['url']),
+            builder: (_) => GuestWebViewPage(
+              title: item['title'],
+              url: item['url'],
+            ),
           ),
         );
       },
@@ -128,14 +132,14 @@ class _GuestHomePageState extends State<GuestHomePage> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F6FA),
+          color: const Color(0xFF08335B),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF002147), width: 1),
+          border: Border.all(color: const Color(0xFFFFD700), width: 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(item['icon'], size: 36, color: const Color(0xFF002147)),
+            Icon(item['icon'], size: 36, color: Colors.white),
             const SizedBox(height: 10),
             Text(
               item['title'],
@@ -143,6 +147,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
               style: const TextStyle(
                 fontSize: 14,
                 fontFamily: 'BreeSerif',
+                color: Colors.white,
               ),
             ),
           ],
@@ -154,43 +159,23 @@ class _GuestHomePageState extends State<GuestHomePage> {
   final List<Map<String, dynamic>> _shortcuts = [
     {
       'title': 'Apply to ETAMU',
-      'url': 'https://www.tamuc.edu/apply-now/',
+      'url': 'https://www.tamuc.edu/apply/',
       'icon': Icons.school,
     },
     {
-      'title': 'Campus Life Virtual Tour',
-      'url': 'https://www.tamuc.edu/map/',
-      'icon': Icons.map,
-    },
-    {
-      'title': 'Parking',
-      'url': 'https://www.tamuc.edu/parking/',
-      'icon': Icons.local_parking,
-    },
-    {
-      'title': 'Lion Athletics',
-      'url': 'https://lionathletics.com/',
-      'icon': Icons.sports_soccer,
-    },
-    {
-      'title': 'Campus Rec',
-      'url': 'https://www.tamuc.edu/campusrec/',
-      'icon': Icons.fitness_center,
-    },
-    {
       'title': 'Academic Calendar',
-      'url': 'https://www.tamuc.edu/registrar/academic-calendar/',
-      'icon': Icons.calendar_today,
+      'url': 'https://calendar.tamuc.edu/academic',
+      'icon': Icons.calendar_month,
     },
     {
       'title': 'Contact Directory',
-      'url': 'https://www.tamuc.edu/contact-us/',
+      'url': 'https://appsprod.tamuc.edu//pb/Default.asp?search=keywordresult&_gl=1*gec4kc',
       'icon': Icons.contact_page,
     },
     {
-      'title': 'Lion Safe App',
-      'url': 'https://apps.apple.com/us/app/lion-safe/id1434558723',
-      'icon': Icons.shield,
+      'title': 'Campus Life Tour',
+      'url': 'https://www.tamuc.edu/map/',
+      'icon': Icons.map,
     },
   ];
 }
