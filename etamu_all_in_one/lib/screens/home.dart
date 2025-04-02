@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:etamu_all_in_one/widgets/bus_route.dart';
 import 'package:etamu_all_in_one/widgets/campus_map.dart';
+import 'package:etamu_all_in_one/widgets/hub_page.dart';
 
 class Home extends StatefulWidget {
   final String role; // 'student' or 'faculty'
@@ -34,17 +35,7 @@ class _HomeState extends State<Home> {
             : 'Welcome, $email!';
 
     final List<Widget> _pages = [
-      Center(
-        child: Text(
-          welcomeMessage,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'BreeSerif',
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
+      const HubPage(),
       const Center(child: Text('Calendar Page')),
       const Center(child: Text('Grades Page')),
       const Center(child: Text('Settings Page')),
