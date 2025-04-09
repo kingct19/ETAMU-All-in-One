@@ -35,15 +35,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      final destination = widget.role.toLowerCase() == 'faculty'
-          ? '/faculty_home'
-          : '/student_home';
+      final destination =
+          widget.role.toLowerCase() == 'faculty'
+              ? '/faculty_home'
+              : '/student_home';
 
       Navigator.pushReplacementNamed(context, destination);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login failed. Please check your credentials.')),
+        const SnackBar(
+          content: Text('Login failed. Please check your credentials.'),
+        ),
       );
     } finally {
       if (mounted) {
@@ -63,9 +66,20 @@ class _LoginScreenState extends State<LoginScreen> {
     final bool isFaculty = widget.role.toLowerCase() == 'faculty';
     final String label = isFaculty ? 'Email' : 'Username (CWID)';
     final String hint = isFaculty ? 'faculty@example.edu' : '00000000';
-    final TextInputType inputType = isFaculty ? TextInputType.emailAddress : TextInputType.number;
+    final TextInputType inputType =
+        isFaculty ? TextInputType.emailAddress : TextInputType.number;
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: gold,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: const Color(0xFF002147),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
@@ -73,10 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/etamu_logo.jpg',
-                height: 140,
-              ),
+              Image.asset('assets/images/etamu_logo.jpg', height: 140),
               const SizedBox(height: 24),
               const Text(
                 'Sign in to myLEO',
@@ -120,27 +131,27 @@ class _LoginScreenState extends State<LoginScreen> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: gold,
-                          foregroundColor: navyBlue,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: gold,
+                        foregroundColor: navyBlue,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        onPressed: _login,
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'BreeSerif',
-                          ),
+                      ),
+                      onPressed: _login,
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'BreeSerif',
                         ),
                       ),
                     ),
+                  ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () {},

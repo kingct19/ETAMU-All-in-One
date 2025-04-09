@@ -41,6 +41,20 @@ class _GuestHomePageState extends State<GuestHomePage> {
     const gold = Color(0xFFFFD700);
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: gold,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: const Color(0xFF002147), // Navy blue
+        title: const Text(
+          'Welcome to ETAMU',
+          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white),
+        ),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
