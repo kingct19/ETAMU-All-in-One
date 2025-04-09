@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:etamu_all_in_one/widgets/bus_route.dart';
 import 'package:etamu_all_in_one/widgets/campus_map.dart';
 import 'package:etamu_all_in_one/widgets/hub_page.dart';
+import 'package:etamu_all_in_one/widgets/calender_page.dart';
 
 class Home extends StatefulWidget {
   final String role; // 'student' or 'faculty'
@@ -36,18 +37,18 @@ class _HomeState extends State<Home> {
 
     final List<Widget> _pages = [
       const HubPage(),
-      const Center(child: Text('Calendar Page')),
+      const CalendarPage(),
       const Center(child: Text('Grades Page')),
-      const Center(child: Text('Settings Page')),
       const BusRoutePage(),
       const CampusMapPage(),
+      const Center(child: Text('Settings Page')),
     ];
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF002147), // Navy blue
         title: const Text(
-          'ETAMU Dashboard',
+          'ETAMU Hub',
           style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white),
         ),
         actions: [
@@ -61,7 +62,7 @@ class _HomeState extends State<Home> {
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: const Color.fromARGB(255, 15, 21, 32),
         currentIndex: _selectedIndex,
         onTap: (int index) {
           setState(() {
@@ -81,14 +82,14 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(icon: Icon(Icons.grade), label: 'Grades'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.emoji_transportation),
             label: 'Bus Route',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Campus Map'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
       ),
     );
