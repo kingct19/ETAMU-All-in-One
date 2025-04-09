@@ -27,14 +27,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final user = _auth.currentUser;
-    final email = user?.email ?? "User";
-
-    final String welcomeMessage =
-        widget.role == 'faculty'
-            ? 'Welcome, Professor $email!'
-            : 'Welcome, $email!';
-
     final List<Widget> _pages = [
       const HubPage(),
       const CalendarPage(),

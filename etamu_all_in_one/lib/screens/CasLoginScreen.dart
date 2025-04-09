@@ -17,25 +17,22 @@ class _CasLoginScreenState extends State<CasLoginScreen> {
   void initState() {
     super.initState();
 
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (request) {
-            final url = request.url;
-            if (url.contains("ticket=")) {
-              final uri = Uri.parse(url);
-              final ticket = uri.queryParameters['ticket'];
-              
-              // TODO: Verify ticket with backend
-              Navigator.pushReplacementNamed(context, '/student_home');
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(casLoginUrl));
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onNavigationRequest: (request) {
+                final url = request.url;
+                if (url.contains("ticket=")) {
+                  Navigator.pushReplacementNamed(context, '/student_home');
+                  return NavigationDecision.prevent;
+                }
+                return NavigationDecision.navigate;
+              },
+            ),
+          )
+          ..loadRequest(Uri.parse(casLoginUrl));
   }
 
   @override

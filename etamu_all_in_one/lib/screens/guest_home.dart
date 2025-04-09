@@ -18,13 +18,15 @@ class _GuestHomePageState extends State<GuestHomePage> {
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse('https://www.tamuc.edu'));
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..loadRequest(Uri.parse('https://www.tamuc.edu'));
   }
 
   void _toggleScroll() {
-    final double scrollTarget = _scrolledToShortcuts ? 0 : MediaQuery.of(context).size.height;
+    final double scrollTarget =
+        _scrolledToShortcuts ? 0 : MediaQuery.of(context).size.height;
     _scrollController.animateTo(
       scrollTarget,
       duration: const Duration(milliseconds: 600),
@@ -37,7 +39,6 @@ class _GuestHomePageState extends State<GuestHomePage> {
   Widget build(BuildContext context) {
     const navyBlue = Color(0xFF002147);
     const gold = Color(0xFFFFD700);
-    const darkCard = Color(0xFF08335B);
 
     return Scaffold(
       body: Stack(
@@ -52,16 +53,21 @@ class _GuestHomePageState extends State<GuestHomePage> {
                 ),
                 Container(
                   key: _shortcutsKey,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 24,
+                  ),
                   decoration: const BoxDecoration(
                     color: navyBlue,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 8,
                         offset: Offset(0, -4),
-                      )
+                      ),
                     ],
                   ),
                   child: Column(
@@ -98,8 +104,14 @@ class _GuestHomePageState extends State<GuestHomePage> {
               onPressed: _toggleScroll,
               backgroundColor: navyBlue,
               foregroundColor: Colors.white,
-              label: Text(_scrolledToShortcuts ? 'Back to Website' : 'Quick Links'),
-              icon: Icon(_scrolledToShortcuts ? Icons.arrow_upward : Icons.arrow_downward),
+              label: Text(
+                _scrolledToShortcuts ? 'Back to Website' : 'Quick Links',
+              ),
+              icon: Icon(
+                _scrolledToShortcuts
+                    ? Icons.arrow_upward
+                    : Icons.arrow_downward,
+              ),
             ),
           ),
         ],
@@ -113,7 +125,8 @@ class _GuestHomePageState extends State<GuestHomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => GuestWebViewPage(title: item['title'], url: item['url']),
+            builder:
+                (_) => GuestWebViewPage(title: item['title'], url: item['url']),
           ),
         );
       },
@@ -159,7 +172,8 @@ class _GuestHomePageState extends State<GuestHomePage> {
     },
     {
       'title': 'Contact Directory',
-      'url': 'https://appsprod.tamuc.edu//pb/Default.asp?search=keywordresult&_gl=1*gec4kc',
+      'url':
+          'https://appsprod.tamuc.edu//pb/Default.asp?search=keywordresult&_gl=1*gec4kc',
       'icon': Icons.contact_page,
     },
     {
