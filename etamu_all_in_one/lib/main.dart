@@ -5,8 +5,8 @@ import 'firebase_options.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
 import 'screens/guest_home.dart';
-import 'screens/splash_screen.dart'; // ✅ NEW
-import 'screens/role_picker.dart';   // ✅ RENAMED
+import 'screens/splash_screen.dart'; // ✅ Splash screen
+import 'widgets/role_picker.dart';  // ✅ Modal widget, not a page
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,14 +25,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'BreeSerif',
       ),
-      initialRoute: '/', // ✅ now points to splash
+      initialRoute: '/', // Starts from splash screen
       routes: {
-        '/': (context) => const SplashScreen(),       // ✅ Splash first
+        '/': (context) => const SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/student_home': (context) => Home(role: 'student'),
         '/faculty_home': (context) => Home(role: 'faculty'),
         '/guest': (context) => const GuestHomePage(),
-        '/role_picker': (context) => const RolePickerPage(), // ✅ still accessible
+        // 🔁 Removed '/role_picker' as it's now a modal, not a route
       },
       debugShowCheckedModeBanner: false,
     );
