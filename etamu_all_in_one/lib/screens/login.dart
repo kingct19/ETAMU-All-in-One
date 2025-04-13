@@ -63,12 +63,6 @@ class _LoginScreenState extends State<LoginScreen> {
     const Color gold = Color(0xFFFFD700);
     const Color skyBlue = Color(0xFFCCE7FF);
 
-    final bool isFaculty = widget.role.toLowerCase() == 'faculty';
-    final String label = isFaculty ? 'Email' : 'Username (CWID)';
-    final String hint = isFaculty ? 'faculty@example.edu' : '00000000';
-    final TextInputType inputType =
-        isFaculty ? TextInputType.emailAddress : TextInputType.number;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -78,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: const Color(0xFF002147),
+        backgroundColor: navyBlue,
       ),
       backgroundColor: Colors.white,
       body: Center(
@@ -101,12 +95,12 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               TextField(
                 controller: _emailController,
-                keyboardType: inputType,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: skyBlue,
-                  labelText: label,
-                  hintText: hint,
+                  labelText: 'Email',
+                  hintText: 'you@example.com',
                   prefixIcon: const Icon(Icons.person),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
@@ -131,27 +125,27 @@ class _LoginScreenState extends State<LoginScreen> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: gold,
-                        foregroundColor: navyBlue,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: gold,
+                          foregroundColor: navyBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                      ),
-                      onPressed: _login,
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'BreeSerif',
+                        onPressed: _login,
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'BreeSerif',
+                          ),
                         ),
                       ),
                     ),
-                  ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () {},
@@ -160,14 +154,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(fontFamily: 'BreeSerif'),
                 ),
               ),
-              if (!isFaculty)
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    '› Forgot your CWID?',
-                    style: TextStyle(fontFamily: 'BreeSerif'),
-                  ),
-                ),
             ],
           ),
         ),
