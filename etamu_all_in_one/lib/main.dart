@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-import 'screens/role.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
 import 'screens/guest_home.dart';
+import 'screens/splash_screen.dart'; // ✅ NEW
+import 'screens/role_picker.dart';   // ✅ RENAMED
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,13 +25,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'BreeSerif',
       ),
-      initialRoute: '/',
+      initialRoute: '/', // ✅ now points to splash
       routes: {
-        '/': (context) => const RoleSelectionPage(),
-        '/login': (context) => LoginScreen(), // 🔁 Removed `const` due to dynamic role
+        '/': (context) => const SplashScreen(),       // ✅ Splash first
+        '/login': (context) => LoginScreen(),
         '/student_home': (context) => Home(role: 'student'),
         '/faculty_home': (context) => Home(role: 'faculty'),
         '/guest': (context) => const GuestHomePage(),
+        '/role_picker': (context) => const RolePickerPage(), // ✅ still accessible
       },
       debugShowCheckedModeBanner: false,
     );
