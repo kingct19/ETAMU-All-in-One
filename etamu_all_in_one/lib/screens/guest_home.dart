@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'guest_home_tab.dart';       // Home tab (WebView)
-import 'guest_menu.dart';          // Grid tab
-import '../widgets/bus_route.dart'; // Bus tab
-import 'messages_tab.dart';        // Messages tab (renamed from lionsafe)
-import '../widgets/settings_page.dart'; // Settings
+import 'guest_home_tab.dart';
+import 'guest_menu.dart';
+import '../widgets/bus_route.dart';
+import '../widgets/campus_map.dart';
+import 'messages_tab.dart';
+import 'role_selection_page.dart'; // ✅ reuse the old role picker full-screen
 
 class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
@@ -15,12 +16,13 @@ class GuestHomePage extends StatefulWidget {
 class _GuestHomePageState extends State<GuestHomePage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _tabs = const [
-    GuestHomeTab(),
-    GuestMenuTab(),
-    BusRoutePage(),
-    MessagesTab(),
-    SettingsPage(),
+  final List<Widget> _tabs = [
+    const GuestHomeTab(),
+    const GuestMenuTab(),
+    const BusRoutePage(),
+    const MessagesTab(),
+    const CampusMapPage(),
+    const RoleSelectionPage(), // ✅ Now full screen
   ];
 
   @override
@@ -39,7 +41,8 @@ class _GuestHomePageState extends State<GuestHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
           BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(icon: Icon(Icons.sync_alt), label: 'Switch Role'), // ✅
         ],
       ),
     );
