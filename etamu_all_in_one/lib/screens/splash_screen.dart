@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
@@ -16,14 +17,22 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 2), () async {
       final user = _auth.currentUser;
 
       if (user != null) {
-        // Check user's last signed-in role if you store it — fallback to student
-        Navigator.pushReplacementNamed(context, '/student_home');
+        // ✅ Load last known role
+        final prefs = await SharedPreferences.getInstance();
+        final role = prefs.getString('lastRole') ?? 'student';
+
+        final route = role == 'faculty' ? '/faculty_home' : '/student_home';
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, route);
+        }
       } else {
-        Navigator.pushReplacementNamed(context, '/guest');
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/guest');
+        }
       }
     });
   }
@@ -35,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     return Scaffold(
       backgroundColor: navyBlue,
-      body: Center(
+      body: const Center(
         child: Text(
           'ETAMU',
           style: TextStyle(

@@ -12,8 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Ensure persistent login
-  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  // ❌ DO NOT call setPersistence() on mobile. Firebase Auth is persistent by default on Android/iOS.
 
   runApp(const MyApp());
 }

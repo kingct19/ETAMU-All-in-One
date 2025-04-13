@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // ✅
 
 class LoginScreen extends StatefulWidget {
   final String role; // 'student' or 'faculty'
@@ -32,6 +33,10 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      // ✅ Save role to local storage
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('lastRole', widget.role);
 
       if (!mounted) return;
 
