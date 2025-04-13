@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
 
 class RoleSelectionPage extends StatelessWidget {
@@ -22,6 +24,28 @@ class RoleSelectionPage extends StatelessWidget {
         {'label': 'Student', 'value': 'student'},
         {'label': 'Guest', 'value': 'guest'},
       ];
+    }
+  }
+
+  Future<void> _handleRoleTap(BuildContext context, String selectedRole) async {
+    if (selectedRole == 'guest') {
+      Navigator.pushReplacementNamed(context, '/guest');
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final lastRole = prefs.getString('lastRole');
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null && lastRole == selectedRole) {
+      Navigator.pushReplacementNamed(context, '/${selectedRole}_home');
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LoginScreen(role: selectedRole),
+        ),
+      );
     }
   }
 
@@ -60,18 +84,7 @@ class RoleSelectionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {
-                  if (role['value'] == 'guest') {
-                    Navigator.pushReplacementNamed(context, '/guest');
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => LoginScreen(role: role['value']!),
-                      ),
-                    );
-                  }
-                },
+                onPressed: () => _handleRoleTap(context, role['value']!),
                 child: Text(
                   role['label']!,
                   style: const TextStyle(
