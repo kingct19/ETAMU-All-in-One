@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:etamu_all_in_one/widgets/hub_page.dart';
 import 'package:etamu_all_in_one/widgets/calender_page.dart';
 import 'package:etamu_all_in_one/widgets/bus_route.dart';
 import 'package:etamu_all_in_one/widgets/campus_map.dart';
-import 'package:etamu_all_in_one/widgets/messages_tab.dart';
+import 'package:etamu_all_in_one/widgets/messages_tab.dart'; // ✅ Corrected import path
 import 'package:etamu_all_in_one/screens/role_selection_page.dart';
+import 'package:etamu_all_in_one/screens/student_dashboard_page.dart';
+import 'package:etamu_all_in_one/screens/faculty_dashboard_page.dart';
 
 class Home extends StatefulWidget {
   final String role; // 'student' or 'faculty'
@@ -20,13 +21,15 @@ class _HomeState extends State<Home> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   int _selectedIndex = 0;
 
-  final List<Widget> _tabs = [
-    const HubPage(),
+  late final List<Widget> _tabs = [
+    widget.role == 'faculty'
+        ? const FacultyDashboardPage()
+        : const StudentDashboardPage(),
     const CalendarPage(),
     const MessagesTab(),
     const BusRoutePage(),
     const CampusMapPage(),
-    const SizedBox.shrink(), // Placeholder for role switch
+    const SizedBox.shrink(), // placeholder for switch role
   ];
 
   void _showRoleSelector() {
@@ -40,19 +43,30 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    const Color navy = Color(0xFF002147);
+    const Color gold = Color(0xFFFFD700);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF002147),
-        title: const Text('ETAMU Dashboard', style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white)),
+        backgroundColor: navy,
+        title: Text(
+          '${widget.role[0].toUpperCase()}${widget.role.substring(1)} Portal',
+          style: const TextStyle(
+            fontFamily: 'BreeSerif',
+            color: Colors.white,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.amber),
+            icon: const Icon(Icons.logout, color: gold),
             tooltip: 'Logout',
             onPressed: () async {
               await _auth.signOut();
-              if (context.mounted) Navigator.pushReplacementNamed(context, '/login');
+              if (context.mounted) {
+                Navigator.pushReplacementNamed(context, '/login');
+              }
             },
-          )
+          ),
         ],
       ),
       body: _tabs[_selectedIndex],
@@ -65,17 +79,35 @@ class _HomeState extends State<Home> {
             setState(() => _selectedIndex = index);
           }
         },
-        selectedItemColor: const Color(0xFFFFD700),
+        selectedItemColor: gold,
         unselectedItemColor: Colors.white,
-        backgroundColor: const Color(0xFF002147),
+        backgroundColor: navy,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.dashboard),
+            label: widget.role == 'faculty' ? 'Faculty' : 'Student',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Calendar',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: 'Messages',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.directions_bus),
+            label: 'Bus',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Role',
+          ),
         ],
       ),
     );
