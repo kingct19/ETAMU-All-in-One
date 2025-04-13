@@ -2,55 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'role_picker.dart'; // ✅ Ensure correct import
 
-class SettingsPage extends StatelessWidget {
+class RoleSelectionPage extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final String currentRole;
 
-  SettingsPage({super.key});
+  RoleSelectionPage({super.key, this.currentRole = 'guest'});
 
   @override
   Widget build(BuildContext context) {
     final bool isLoggedIn = _auth.currentUser != null;
 
     return Scaffold(
+      appBar: AppBar(
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
+        backgroundColor: const Color(0xFF002147),
+        title: const Text(
+          'Switch Role',
+          style: TextStyle(
+            fontFamily: 'BreeSerif',
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: ListView(
         children: [
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Switch Role'),
-            subtitle: const Text('Student / Faculty'),
-            onTap: () => showModalBottomSheet(
-              context: context,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              builder: (_) => const RolePicker(),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.dark_mode),
-            title: const Text('Dark Mode'),
-            subtitle: const Text('Coming soon!'),
-            trailing: Switch(value: false, onChanged: (val) {
-              // TODO: Implement dark mode
-            }),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.feedback),
-            title: const Text('Submit Feedback'),
+            leading: const Icon(Icons.school),
+            title: const Text('Student Portal'),
             onTap: () {
-              // TODO: Implement feedback route
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const LoginScreen(role: 'student'),
+                ),
+              );
             },
+            enabled: currentRole != 'student',
           ),
-          if (isLoggedIn) const Divider(),
-          if (isLoggedIn)
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Faculty Portal'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const LoginScreen(role: 'faculty'),
+                ),
+              );
+            },
+            enabled: currentRole != 'faculty',
+          ),
+          if (currentRole != 'guest')
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () async {
-                await _auth.signOut();
-                Navigator.pushReplacementNamed(context, '/login');
+              leading: const Icon(Icons.visibility),
+              title: const Text('Continue as Guest'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/guest');
               },
             ),
         ],

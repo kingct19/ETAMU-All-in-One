@@ -2,108 +2,87 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 
 class RoleSelectionPage extends StatelessWidget {
-  const RoleSelectionPage({super.key});
+  final String currentRole;
+
+  const RoleSelectionPage({super.key, required this.currentRole});
+
+  List<Map<String, String>> _getAvailableRoles(String role) {
+    if (role == 'guest') {
+      return [
+        {'label': 'Student', 'value': 'student'},
+        {'label': 'Faculty', 'value': 'faculty'},
+      ];
+    } else if (role == 'student') {
+      return [
+        {'label': 'Faculty', 'value': 'faculty'},
+        {'label': 'Guest', 'value': 'guest'},
+      ];
+    } else {
+      return [
+        {'label': 'Student', 'value': 'student'},
+        {'label': 'Guest', 'value': 'guest'},
+      ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    const Color navyBlue = Color(0xFF002147);
-    const Color gold = Color(0xFFFFD700);
-
-    final Size screenSize = MediaQuery.of(context).size;
-    final double logoWidth = screenSize.width * 0.4;
-    final double buttonFontSize = screenSize.width < 400 ? 16 : 18;
+    final availableRoles = _getAvailableRoles(currentRole);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                const Color.fromARGB(153, 0, 0, 0),
-                BlendMode.darken,
-              ),
-              child: Image.asset(
-                'assets/images/login_bg.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'myLEO',
-                      style: TextStyle(
-                        fontFamily: 'BreeSerif',
-                        fontSize: 36,
-                        fontWeight: FontWeight.w900,
-                        color: gold,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Image.asset(
-                      'assets/images/etamu_logo.jpg',
-                      width: logoWidth,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 32),
-                    _buildRoleButton(context, 'Student', navyBlue, gold, 'student', buttonFontSize),
-                    const SizedBox(height: 16),
-                    _buildRoleButton(context, 'Faculty', navyBlue, gold, 'faculty', buttonFontSize),
-                    const SizedBox(height: 16),
-                    _buildRoleButton(context, 'Guest', gold, navyBlue, 'guest', buttonFontSize),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRoleButton(
-    BuildContext context,
-    String label,
-    Color bgColor,
-    Color textColor,
-    String role,
-    double fontSize,
-  ) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF002147),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFFFD700)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Select Role',
+          style: TextStyle(
+            fontFamily: 'BreeSerif',
+            color: Color(0xFFFFD700),
           ),
         ),
-        onPressed: () {
-          if (role == 'guest') {
-            Navigator.pushReplacementNamed(context, '/guest');
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => LoginScreen(role: role),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: availableRoles.map((role) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF002147),
+                  foregroundColor: const Color(0xFFFFD700),
+                  minimumSize: const Size.fromHeight(56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  if (role['value'] == 'guest') {
+                    Navigator.pushReplacementNamed(context, '/guest');
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LoginScreen(role: role['value']!),
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  role['label']!,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BreeSerif',
+                  ),
+                ),
               ),
             );
-          }
-        },
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'BreeSerif',
-            color: textColor,
-          ),
+          }).toList(),
         ),
       ),
     );

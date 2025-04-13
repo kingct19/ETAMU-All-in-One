@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:etamu_all_in_one/widgets/bus_route.dart';
-import 'package:etamu_all_in_one/widgets/campus_map.dart';
 import 'package:etamu_all_in_one/widgets/hub_page.dart';
 import 'package:etamu_all_in_one/widgets/calender_page.dart';
-import 'package:etamu_all_in_one/widgets/role_picker.dart'; // 👈 New import
+import 'package:etamu_all_in_one/widgets/bus_route.dart';
+import 'package:etamu_all_in_one/widgets/campus_map.dart';
+import 'package:etamu_all_in_one/widgets/messages_tab.dart';
+import 'package:etamu_all_in_one/screens/role_selection_page.dart';
 
 class Home extends StatefulWidget {
   final String role; // 'student' or 'faculty'
@@ -19,80 +20,62 @@ class _HomeState extends State<Home> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   int _selectedIndex = 0;
 
-  Future<void> _logout(BuildContext context) async {
-    await _auth.signOut();
-    if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
-    }
-  }
-
-  final List<Widget> _pages = [
+  final List<Widget> _tabs = [
     const HubPage(),
     const CalendarPage(),
-    const Center(child: Text('Grades Page')),
+    const MessagesTab(),
     const BusRoutePage(),
     const CampusMapPage(),
-    const SizedBox(), // Switch Role (placeholder)
+    const SizedBox.shrink(), // Placeholder for role switch
   ];
+
+  void _showRoleSelector() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RoleSelectionPage(currentRole: widget.role),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF002147),
-        title: const Text(
-          'ETAMU Hub',
-          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white),
-        ),
+        title: const Text('ETAMU Dashboard', style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white)),
         actions: [
           IconButton(
-            color: Colors.amberAccent,
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
+            icon: const Icon(Icons.logout, color: Colors.amber),
             tooltip: 'Logout',
-          ),
+            onPressed: () async {
+              await _auth.signOut();
+              if (context.mounted) Navigator.pushReplacementNamed(context, '/login');
+            },
+          )
         ],
       ),
-      body: _pages[_selectedIndex],
+      body: _tabs[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 15, 21, 32),
         currentIndex: _selectedIndex,
-        onTap: (int index) {
+        onTap: (index) {
           if (index == 5) {
-            showModalBottomSheet(
-              context: context,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              builder: (_) => const RolePicker(),
-            );
+            _showRoleSelector();
           } else {
-            setState(() {
-              _selectedIndex = index;
-            });
+            setState(() => _selectedIndex = index);
           }
         },
-        selectedItemColor: Colors.blue[800],
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: const Color(0xFFFFD700),
+        unselectedItemColor: Colors.white,
+        backgroundColor: const Color(0xFF002147),
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.grade), label: 'Grades'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_transportation),
-            label: 'Bus Route',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Campus Map'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.switch_account),
-            label: 'Switch Role',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
+          BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),
         ],
       ),
     );

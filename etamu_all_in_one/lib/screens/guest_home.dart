@@ -3,8 +3,8 @@ import 'guest_home_tab.dart';
 import 'guest_menu.dart';
 import '../widgets/bus_route.dart';
 import '../widgets/campus_map.dart';
-import 'messages_tab.dart';
-import 'role_selection_page.dart'; // ✅ reuse the old role picker full-screen
+import '../widgets/messages_tab.dart';
+import 'role_selection_page.dart';
 
 class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
@@ -22,7 +22,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
     const BusRoutePage(),
     const MessagesTab(),
     const CampusMapPage(),
-    const RoleSelectionPage(), // ✅ Now full screen
+    const RoleSelectionPage(currentRole: 'guest'),
   ];
 
   @override
@@ -42,7 +42,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-          BottomNavigationBarItem(icon: Icon(Icons.sync_alt), label: 'Switch Role'), // ✅
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),
         ],
       ),
     );
