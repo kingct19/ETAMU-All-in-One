@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
 import 'screens/login.dart';
 import 'screens/home.dart';
 import 'screens/guest_home.dart';
-import 'screens/splash_screen.dart'; // ✅ Splash screen
-import 'widgets/role_picker.dart';  // ✅ Modal widget, not a page
+import 'screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Ensure persistent login
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+
   runApp(const MyApp());
 }
 
@@ -25,16 +29,15 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'BreeSerif',
       ),
-      initialRoute: '/', // Starts from splash screen
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => LoginScreen(),
-        '/student_home': (context) => Home(role: 'student'),
-        '/faculty_home': (context) => Home(role: 'faculty'),
         '/guest': (context) => const GuestHomePage(),
-        // 🔁 Removed '/role_picker' as it's now a modal, not a route
+        '/student_home': (context) => const Home(role: 'student'),
+        '/faculty_home': (context) => const Home(role: 'faculty'),
       },
-      debugShowCheckedModeBanner: false,
     );
   }
 }

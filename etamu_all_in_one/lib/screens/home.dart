@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:etamu_all_in_one/widgets/calender_page.dart';
 import 'package:etamu_all_in_one/widgets/bus_route.dart';
 import 'package:etamu_all_in_one/widgets/campus_map.dart';
-import 'package:etamu_all_in_one/widgets/messages_tab.dart'; // ✅ Corrected import path
+import 'package:etamu_all_in_one/widgets/messages_tab.dart';
 import 'package:etamu_all_in_one/screens/role_selection_page.dart';
 import 'package:etamu_all_in_one/screens/student_dashboard_page.dart';
 import 'package:etamu_all_in_one/screens/faculty_dashboard_page.dart';
@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
     const MessagesTab(),
     const BusRoutePage(),
     const CampusMapPage(),
-    const SizedBox.shrink(), // placeholder for switch role
+    const SizedBox.shrink(), // switch role placeholder
   ];
 
   void _showRoleSelector() {
@@ -49,16 +49,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: navy,
-        title: Text(
-          '${widget.role[0].toUpperCase()}${widget.role.substring(1)} Portal',
-          style: const TextStyle(
-            fontFamily: 'BreeSerif',
-            color: Colors.white,
-          ),
-        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: gold),
+            icon: const Icon(Icons.logout, color: Colors.amber),
             tooltip: 'Logout',
             onPressed: () async {
               await _auth.signOut();
@@ -66,7 +59,7 @@ class _HomeState extends State<Home> {
                 Navigator.pushReplacementNamed(context, '/login');
               }
             },
-          ),
+          )
         ],
       ),
       body: _tabs[_selectedIndex],
@@ -88,26 +81,11 @@ class _HomeState extends State<Home> {
             icon: const Icon(Icons.dashboard),
             label: widget.role == 'faculty' ? 'Faculty' : 'Student',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Messages',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.directions_bus),
-            label: 'Bus',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Role',
-          ),
+          const BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
+          const BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
+          const BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
+          const BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          const BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),
         ],
       ),
     );

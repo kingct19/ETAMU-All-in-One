@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
@@ -9,13 +10,21 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     super.initState();
 
-    // ⏳ Navigate after 3 seconds
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/guest');
+    Timer(const Duration(seconds: 2), () {
+      final user = _auth.currentUser;
+
+      if (user != null) {
+        // Check user's last signed-in role if you store it — fallback to student
+        Navigator.pushReplacementNamed(context, '/student_home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/guest');
+      }
     });
   }
 
