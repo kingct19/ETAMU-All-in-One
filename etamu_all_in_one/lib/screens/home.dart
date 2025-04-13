@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../widgets/dashboard_page.dart';
 import '../widgets/calender_page.dart';
-import '../widgets/messages_tab.dart';
+import '../screens/messages_tab.dart';
 import '../widgets/bus_route.dart';
 import '../widgets/campus_map.dart';
 import '../widgets/role_picker.dart';
@@ -21,12 +21,12 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
   final List<Widget> _tabs = const [
-    DashboardPage(),     // Replaces Home
+    DashboardPage(),
     CalendarPage(),
     MessagesTab(),
-    BusRoutePage(),
+    BusRoutePage(),      // ✅ Bus moved here
     CampusMapPage(),
-    SizedBox(), // Placeholder for switch role
+    SizedBox(),          // Role picker handled via modal
   ];
 
   void _logout() async {
@@ -63,9 +63,7 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: _selectedIndex == 5
-          ? _showRolePicker() // show modal if on "Switch Role"
-          : _tabs[_selectedIndex],
+      body: _tabs[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -83,7 +81,7 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
+          BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'), // ✅ Moved here
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
           BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Switch Role'),
         ],
