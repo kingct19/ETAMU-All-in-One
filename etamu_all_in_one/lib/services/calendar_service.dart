@@ -6,7 +6,11 @@ class CalendarEvent {
   final DateTime start;
   final DateTime end;
 
-  CalendarEvent({required this.summary, required this.start, required this.end});
+  CalendarEvent({
+    required this.summary,
+    required this.start,
+    required this.end,
+  });
 }
 
 class CalendarService {
@@ -19,14 +23,23 @@ class CalendarService {
     }
 
     final ical = ICalendar.fromString(response.body);
-    final events = ical.data.where((e) => e['type'] == 'VEVENT');
+    final rawEvents = ical.data.where((e) => e['type'] == 'VEVENT');
 
-    return events.map((e) {
+    return rawEvents.map((e) {
+      final data = e['data'];
+      if (data == null) return null;
+
+      final summary = data['SUMMARY'] ?? 'No Title';
+      final start = DateTime.tryParse(data['DTSTART'] ?? '');
+      final end = DateTime.tryParse(data['DTEND'] ?? '');
+
+      if (start == null || end == null) return null;
+
       return CalendarEvent(
-        summary: e['data']['SUMMARY'] ?? 'No Title',
-        start: DateTime.parse(e['data']['DTSTART']),
-        end: DateTime.parse(e['data']['DTEND']),
+        summary: summary,
+        start: start,
+        end: end,
       );
-    }).toList();
+    }).whereType<CalendarEvent>().toList();
   }
 }
