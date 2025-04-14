@@ -30,15 +30,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     Timer(const Duration(seconds: 3), () async {
       final user = _auth.currentUser;
       final prefs = await SharedPreferences.getInstance();
-      final role = prefs.getString('lastRole') ?? 'guest';
+      final role = prefs.getString('lastRole');
 
-      final route = user == null
-          ? '/guest'
-          : role == 'faculty'
-              ? '/faculty_home'
-              : '/student_home';
-
-      if (mounted) Navigator.pushReplacementNamed(context, route);
+      if (user != null && role != null) {
+        final route = role == 'faculty' ? '/faculty_home' : '/student_home';
+        if (mounted) Navigator.pushReplacementNamed(context, route);
+      } else {
+        if (mounted) Navigator.pushReplacementNamed(context, '/guest');
+      }
     });
   }
 
