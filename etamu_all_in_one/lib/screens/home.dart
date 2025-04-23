@@ -106,7 +106,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 await prefs.remove('lastRole');
 
                 if (context.mounted) {
-                  Navigator.pushReplacementNamed(context, '/login');
+                  Navigator.pushReplacementNamed(context, '/guest_home');
                 }
               },
             ),

@@ -123,10 +123,6 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Calendar')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddEventDialog,
-        child: const Icon(Icons.add),
-      ),
       body: Column(
         children: [
           TableCalendar(
