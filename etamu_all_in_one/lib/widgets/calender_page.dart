@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:etamu_all_in_one/services/calendar_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'dart:async';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -12,127 +15,155 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  Map<DateTime, List<CalendarEvent>> _events = {};
-  bool _loading = true;
+  Map<DateTime, List<String>> _events = {};
+
+  final FlutterLocalNotificationsPlugin _notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
-    _loadCalendarData();
+    _initializeNotifications();
   }
 
-  Future<void> _loadCalendarData() async {
-    try {
-      final events = await CalendarService().fetchEvents();
+  Future<void> _initializeNotifications() async {
+    tz.initializeTimeZones();
 
-      final Map<DateTime, List<CalendarEvent>> grouped = {};
-      for (final event in events) {
-        final day = DateTime(event.start.year, event.start.month, event.start.day);
-        grouped.putIfAbsent(day, () => []).add(event);
-      }
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    const initSettings = InitializationSettings(android: androidSettings);
 
-      setState(() {
-        _events = grouped;
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() => _loading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load calendar: $e')),
-        );
-      }
-    }
+    await _notificationsPlugin.initialize(initSettings);
   }
 
-  List<CalendarEvent> _getEventsForDay(DateTime day) {
-    final normalized = DateTime(day.year, day.month, day.day);
-    return _events[normalized] ?? [];
-  }
+  void _showAddEventDialog() {
+    final titleController = TextEditingController();
+    TimeOfDay selectedTime = TimeOfDay.now();
 
-  @override
-  Widget build(BuildContext context) {
-    const navy = Color(0xFF002147);
-    const gold = Color(0xFFFFD700);
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: navy,
-        title: const Text("Academic Calendar"),
-        titleTextStyle: TextStyle(
-          fontFamily: 'BreeSerif',
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: gold,
-        ),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Add Event'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                TableCalendar(
-                  firstDay: DateTime.utc(2020, 1, 1),
-                  lastDay: DateTime.utc(2030, 12, 31),
-                  focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                  eventLoader: _getEventsForDay,
-                  calendarStyle: const CalendarStyle(
-                    selectedDecoration: BoxDecoration(color: Color(0xFFFFD700), shape: BoxShape.circle),
-                    todayDecoration: BoxDecoration(color: Color(0xFF08335B), shape: BoxShape.circle),
-                    weekendTextStyle: TextStyle(color: Colors.redAccent),
-                    defaultTextStyle: TextStyle(color: Colors.black87),
-                  ),
-                  headerStyle: const HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
-                    titleTextStyle: TextStyle(
-                      fontFamily: 'BreeSerif',
-                      fontSize: 18,
-                    ),
-                  ),
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      _selectedDay = selectedDay;
-                      _focusedDay = focusedDay;
-                    });
-                  },
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: 'Event Title'),
                 ),
-                const SizedBox(height: 12),
-                if (_selectedDay != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Events on ${_selectedDay!.toLocal().toString().split(' ')[0]}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            fontFamily: 'BreeSerif',
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ..._getEventsForDay(_selectedDay!).map((e) => Card(
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              child: ListTile(
-                                leading: const Icon(Icons.event, color: navy),
-                                title: Text(e.summary),
-                                subtitle: Text(
-                                  "${_formatTime(e.start)} → ${_formatTime(e.end)}",
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    final picked = await showTimePicker(
+                      context: context,
+                      initialTime: selectedTime,
+                    );
+                    if (picked != null) selectedTime = picked;
+                  },
+                  child: const Text('Pick Reminder Time'),
+                ),
               ],
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final title = titleController.text.trim();
+                  if (title.isEmpty || _selectedDay == null) return;
+
+                  setState(() {
+                    _events[_selectedDay!] = [...?_events[_selectedDay], title];
+                  });
+
+                  final reminderTime = DateTime(
+                    _selectedDay!.year,
+                    _selectedDay!.month,
+                    _selectedDay!.day,
+                    selectedTime.hour,
+                    selectedTime.minute,
+                  );
+
+                  await _notificationsPlugin.zonedSchedule(
+                    reminderTime.millisecondsSinceEpoch ~/ 1000,
+                    'Event Reminder',
+                    title,
+                    tz.TZDateTime.from(reminderTime, tz.local),
+                    const NotificationDetails(
+                      android: AndroidNotificationDetails(
+                        'reminders',
+                        'Reminders',
+                        channelDescription:
+                            'Reminder notifications for calendar events',
+                      ),
+                    ),
+                    uiLocalNotificationDateInterpretation:
+                        UILocalNotificationDateInterpretation.absoluteTime,
+                    matchDateTimeComponents: DateTimeComponents.time,
+                    androidScheduleMode:
+                        AndroidScheduleMode.exactAllowWhileIdle, // ✅ FIXED
+                  );
+
+                  Navigator.pop(context);
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          ),
     );
   }
 
-  String _formatTime(DateTime time) {
-    return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} ${time.month}/${time.day}/${time.year}";
+  List<String> _getEventsForDay(DateTime day) => _events[day] ?? [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Calendar')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddEventDialog,
+        child: const Icon(Icons.add),
+      ),
+      body: Column(
+        children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            eventLoader: _getEventsForDay,
+            calendarStyle: const CalendarStyle(
+              selectedDecoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: BoxDecoration(
+                color: Colors.orange,
+                shape: BoxShape.circle,
+              ),
+            ),
+            headerStyle: const HeaderStyle(
+              titleCentered: true,
+              formatButtonVisible: false,
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (_selectedDay != null &&
+              _getEventsForDay(_selectedDay!).isNotEmpty)
+            ..._getEventsForDay(
+              _selectedDay!,
+            ).map((event) => ListTile(title: Text(event))),
+        ],
+      ),
+    );
   }
 }

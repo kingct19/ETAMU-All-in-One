@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'package:etamu_all_in_one/widgets/role_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:etamu_all_in_one/widgets/calender_page.dart';
-import 'package:etamu_all_in_one/widgets/bus_route.dart';
 import 'package:etamu_all_in_one/widgets/campus_map.dart';
 import 'package:etamu_all_in_one/widgets/messages_tab.dart';
-import 'package:etamu_all_in_one/screens/role_selection_page.dart';
+import 'package:etamu_all_in_one/widgets/role_selection_page.dart';
 import 'package:etamu_all_in_one/screens/student_dashboard_page.dart';
 import 'package:etamu_all_in_one/screens/faculty_dashboard_page.dart';
 
@@ -31,9 +31,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         : const StudentDashboardPage(),
     const CalendarPage(),
     const MessagesTab(),
-    const BusRoutePage(),
     const CampusMapPage(),
-    const SizedBox.shrink(), // switch role placeholder
+    const RoleSelectionPage(currentRole: 'student'), // switch role placeholder
   ];
 
   void _showRoleSelector() {
@@ -110,7 +109,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   Navigator.pushReplacementNamed(context, '/login');
                 }
               },
-            )
+            ),
           ],
         ),
         body: _tabs[_selectedIndex],
@@ -133,11 +132,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               icon: const Icon(Icons.dashboard),
               label: widget.role == 'faculty' ? 'Faculty' : 'Student',
             ),
-            const BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
-            const BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-            const BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Calendar',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.message),
+              label: 'Messages',
+            ),
             const BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-            const BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Role',
+            ),
           ],
         ),
       ),

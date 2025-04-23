@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'login.dart';
+import '../screens/login.dart';
 
 class RoleSelectionPage extends StatelessWidget {
   final String currentRole;
@@ -42,9 +42,7 @@ class RoleSelectionPage extends StatelessWidget {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => LoginScreen(role: selectedRole),
-        ),
+        MaterialPageRoute(builder: (_) => LoginScreen(role: selectedRole)),
       );
     }
   }
@@ -62,40 +60,38 @@ class RoleSelectionPage extends StatelessWidget {
         ),
         title: const Text(
           'Select Role',
-          style: TextStyle(
-            fontFamily: 'BreeSerif',
-            color: Color(0xFFFFD700),
-          ),
+          style: TextStyle(fontFamily: 'BreeSerif', color: Color(0xFFFFD700)),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: availableRoles.map((role) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF002147),
-                  foregroundColor: const Color(0xFFFFD700),
-                  minimumSize: const Size.fromHeight(56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          children:
+              availableRoles.map((role) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF002147),
+                      foregroundColor: const Color(0xFFFFD700),
+                      minimumSize: const Size.fromHeight(56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () => _handleRoleTap(context, role['value']!),
+                    child: Text(
+                      role['label']!,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'BreeSerif',
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () => _handleRoleTap(context, role['value']!),
-                child: Text(
-                  role['label']!,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'BreeSerif',
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ),
     );

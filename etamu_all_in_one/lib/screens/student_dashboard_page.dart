@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'guest_webview.dart';
+import '../widgets/guest_webview.dart';
 
 class StudentDashboardPage extends StatelessWidget {
   const StudentDashboardPage({super.key});
@@ -7,8 +7,7 @@ class StudentDashboardPage extends StatelessWidget {
   final List<Map<String, dynamic>> _studentTools = const [
     {
       'title': 'myLEO',
-      'url':
-          'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
+      'url': 'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
       'icon': Icons.school,
     },
     {
@@ -23,14 +22,12 @@ class StudentDashboardPage extends StatelessWidget {
     },
     {
       'title': 'Graduate DegreeWorks',
-      'url':
-          'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
+      'url': 'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
       'icon': Icons.account_balance,
     },
     {
       'title': 'Undergraduate DegreeWorks',
-      'url':
-          'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
+      'url': 'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
       'icon': Icons.school_outlined,
     },
   ];
@@ -56,44 +53,46 @@ class StudentDashboardPage extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
-          children: _studentTools.map((item) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => GuestWebViewPage(
-                      title: item['title'],
-                      url: item['url'],
+          children:
+              _studentTools.map((item) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => GuestWebViewPage(
+                              title: item['title'],
+                              url: item['url'],
+                            ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF08335B),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: gold),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(item['icon'], size: 36, color: Colors.white),
+                        const SizedBox(height: 12),
+                        Text(
+                          item['title'],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'BreeSerif',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
                 );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF08335B),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: gold),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(item['icon'], size: 36, color: Colors.white),
-                    const SizedBox(height: 12),
-                    Text(
-                      item['title'],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontFamily: 'BreeSerif',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+              }).toList(),
         ),
       ),
     );

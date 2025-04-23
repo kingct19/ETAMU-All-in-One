@@ -7,13 +7,11 @@ import 'firebase_options.dart';
 import 'screens/login.dart';
 import 'screens/home.dart';
 import 'screens/guest_home.dart';
-import 'screens/splash_screen.dart';
+import 'widgets/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
@@ -40,7 +38,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.detached || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('lastRole'); // ✅ Clear saved role
       await FirebaseAuth.instance.signOut(); // ✅ Sign out from Firebase
@@ -51,10 +50,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ETAMU All-in-One',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'BreeSerif',
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'BreeSerif'),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {

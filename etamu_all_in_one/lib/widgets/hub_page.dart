@@ -5,85 +5,170 @@ class HubPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> hubItems = [
-      {
-        'icon': Icons.grade,
-        'label': 'Grades',
-        'onTap': () {
-          // TODO: Navigate to Grades screen
-        },
-      },
-      {
-        'icon': Icons.restaurant_menu,
-        'label': 'Lunch Menu',
-        'onTap': () {
-          // TODO: Navigate to Lunch screen
-        },
-      },
-      {
-        'icon': Icons.newspaper,
-        'label': 'Campus News',
-        'onTap': () {
-          // TODO: Navigate to News screen
-        },
-      },
-      {
-        'icon': Icons.calendar_today,
-        'label': 'Calendar',
-        'onTap': () {
-          // TODO: Navigate to Calendar
-        },
-      },
-      {
-        'icon': Icons.directions_bus,
-        'label': 'Bus Routes',
-        'onTap': () {
-          Navigator.pushNamed(context, '/bus');
-        },
-      },
-      {
-        'icon': Icons.map,
-        'label': 'Campus Map',
-        'onTap': () {
-          Navigator.pushNamed(context, '/map');
-        },
-      },
-    ];
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          children:
-              hubItems.map((item) {
-                return GestureDetector(
-                  onTap: item['onTap'],
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF002147),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(item['icon'], color: Colors.white, size: 40),
-                        const SizedBox(height: 12),
-                        Text(
-                          item['label'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'BreeSerif',
-                            fontSize: 16,
-                          ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F6FA),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Greeting & Avatar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        'April 10',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Hi, Lion!',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'BreeSerif',
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              }).toList(),
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundImage: AssetImage('assets/profile.png'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Search Box
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search),
+                    hintText: 'Search',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Call-to-action box
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFDAE4F0),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Need quick access?',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'BreeSerif',
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text('Tap any feature below to begin'),
+                        ],
+                      ),
+                    ),
+                    Image.asset('assets/grad_icon.png', width: 80),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Grid tiles
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  children: [
+                    _buildTile(
+                      context,
+                      icon: Icons.grade,
+                      label: 'Grades',
+                      onTap: () {},
+                    ),
+                    _buildTile(
+                      context,
+                      icon: Icons.calendar_today,
+                      label: 'Calendar',
+                      onTap: () {
+                        Navigator.pushNamed(context, '/calendar');
+                      },
+                    ),
+                    _buildTile(
+                      context,
+                      icon: Icons.directions_bus,
+                      label: 'Bus Route',
+                      onTap: () {
+                        Navigator.pushNamed(context, '/bus');
+                      },
+                    ),
+                    _buildTile(
+                      context,
+                      icon: Icons.map,
+                      label: 'Campus Map',
+                      onTap: () {
+                        Navigator.pushNamed(context, '/map');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTile(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF002147),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Colors.white),
+            const SizedBox(height: 10),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontFamily: 'BreeSerif',
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

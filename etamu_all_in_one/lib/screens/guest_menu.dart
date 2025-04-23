@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'guest_webview.dart';
+import 'package:etamu_all_in_one/theme.dart';
+import '../widgets/guest_webview.dart';
 
 class GuestMenuTab extends StatefulWidget {
   const GuestMenuTab({super.key});
@@ -10,7 +11,7 @@ class GuestMenuTab extends StatefulWidget {
 
 class _GuestMenuTabState extends State<GuestMenuTab> {
   bool _showPreferences = false;
-  bool _darkMode = false; // placeholder toggle
+  bool _darkMode = false;
 
   final List<Map<String, dynamic>> _menuItems = const [
     {
@@ -57,44 +58,41 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
 
   @override
   Widget build(BuildContext context) {
-    const Color bgColor = Color(0xFF002147);
-
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: ETAMUTheme.primary,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(ETAMUTheme.paddingMd),
           child: Column(
             children: [
-              // 🔻 PREFERENCES BANNER
               InkWell(
-                onTap: () {
-                  setState(() {
-                    _showPreferences = !_showPreferences;
-                  });
-                },
+                onTap:
+                    () => setState(() => _showPreferences = !_showPreferences),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF08335B),
+                    color: ETAMUTheme.primary.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFFFD700)),
+                    border: Border.all(color: ETAMUTheme.secondary),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         '⚙ Preferences',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'BreeSerif',
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelLarge?.copyWith(color: Colors.white),
                       ),
                       Icon(
-                        _showPreferences ? Icons.expand_less : Icons.expand_more,
-                        color: Colors.amber,
+                        _showPreferences
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        color: ETAMUTheme.secondary,
                       ),
                     ],
                   ),
@@ -104,25 +102,29 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
                 const SizedBox(height: 12),
                 SwitchListTile(
                   value: _darkMode,
-                  onChanged: (val) {
-                    setState(() {
-                      _darkMode = val;
-                      // TODO: Add theme toggle logic
-                    });
-                  },
-                  title: const Text('Dark Mode', style: TextStyle(color: Colors.white, fontFamily: 'BreeSerif')),
+                  onChanged: (val) => setState(() => _darkMode = val),
+                  title: Text(
+                    'Dark Mode',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                  ),
                   secondary: const Icon(Icons.dark_mode, color: Colors.white),
                 ),
                 ListTile(
                   leading: const Icon(Icons.feedback, color: Colors.white),
-                  title: const Text('Submit Feedback', style: TextStyle(color: Colors.white, fontFamily: 'BreeSerif')),
+                  title: Text(
+                    'Submit Feedback',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                  ),
                   onTap: () {
                     // TODO: Add feedback navigation
                   },
                 ),
               ],
               const SizedBox(height: 12),
-              // 🔳 GRID SHORTCUTS
               Expanded(
                 child: GridView.builder(
                   itemCount: _menuItems.length,
@@ -138,20 +140,21 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => GuestWebViewPage(
-                              title: item['title'],
-                              url: item['url'],
-                            ),
+                            builder:
+                                (_) => GuestWebViewPage(
+                                  title: item['title'],
+                                  url: item['url'],
+                                ),
                           ),
                         );
                       },
                       borderRadius: BorderRadius.circular(12),
-                      splashColor: Colors.amber.withOpacity(0.2),
+                      splashColor: ETAMUTheme.secondary.withOpacity(0.2),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF08335B),
+                          color: ETAMUTheme.primary.withOpacity(0.85),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFFD700)),
+                          border: Border.all(color: ETAMUTheme.secondary),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -161,11 +164,8 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
                             Text(
                               item['title'],
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'BreeSerif',
-                                color: Colors.white,
-                              ),
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(color: Colors.white),
                             ),
                           ],
                         ),

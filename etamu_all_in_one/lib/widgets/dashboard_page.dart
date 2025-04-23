@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/guest_webview.dart';
+import 'guest_webview.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -52,44 +52,49 @@ class DashboardPage extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            children: _studentTools.map((item) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => GuestWebViewPage(
-                        title: item['title'],
-                        url: item['url'],
+            children:
+                _studentTools.map((item) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => GuestWebViewPage(
+                                title: item['title'],
+                                url: item['url'],
+                              ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF08335B),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFFFD700),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(item['icon'], color: Colors.white, size: 36),
+                          const SizedBox(height: 12),
+                          Text(
+                            item['title'],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'BreeSerif',
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF08335B),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFFFD700), width: 1),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(item['icon'], color: Colors.white, size: 36),
-                      const SizedBox(height: 12),
-                      Text(
-                        item['title'],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'BreeSerif',
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                }).toList(),
           ),
         ),
       ),

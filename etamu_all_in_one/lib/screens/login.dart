@@ -130,27 +130,27 @@ class _LoginScreenState extends State<LoginScreen> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: gold,
-                          foregroundColor: navyBlue,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: gold,
+                        foregroundColor: navyBlue,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        onPressed: _login,
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'BreeSerif',
-                          ),
+                      ),
+                      onPressed: _login,
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'BreeSerif',
                         ),
                       ),
                     ),
+                  ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () {},

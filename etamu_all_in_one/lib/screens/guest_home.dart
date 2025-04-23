@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'guest_home_tab.dart';
 import 'guest_menu.dart';
-import '../widgets/bus_route.dart';
 import '../widgets/campus_map.dart';
 import '../widgets/messages_tab.dart';
-import 'role_selection_page.dart';
+import '../widgets/role_selection_page.dart';
 
 class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
@@ -19,7 +18,6 @@ class _GuestHomePageState extends State<GuestHomePage> {
   final List<Widget> _tabs = [
     const GuestHomeTab(),
     const GuestMenuTab(),
-    const BusRoutePage(),
     const MessagesTab(),
     const CampusMapPage(),
     const RoleSelectionPage(currentRole: 'guest'),
@@ -39,7 +37,6 @@ class _GuestHomePageState extends State<GuestHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-          BottomNavigationBarItem(icon: Icon(Icons.directions_bus), label: 'Bus'),
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),

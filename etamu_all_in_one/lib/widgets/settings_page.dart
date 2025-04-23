@@ -1,3 +1,4 @@
+import 'package:etamu_all_in_one/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'role_picker.dart'; // ✅ Ensure correct import
@@ -14,19 +15,17 @@ class RoleSelectionPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: Navigator.canPop(context)
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              )
-            : null,
+        leading:
+            Navigator.canPop(context)
+                ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
+                )
+                : null,
         backgroundColor: const Color(0xFF002147),
         title: const Text(
           'Switch Role',
-          style: TextStyle(
-            fontFamily: 'BreeSerif',
-            color: Colors.white,
-          ),
+          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white),
         ),
       ),
       body: ListView(

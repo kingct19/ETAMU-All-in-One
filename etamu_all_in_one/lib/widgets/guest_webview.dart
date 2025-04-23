@@ -9,9 +9,10 @@ class GuestWebViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WebViewController controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(url));
+    final WebViewController controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..loadRequest(Uri.parse(url));
 
     const Color navyBlue = Color(0xFF002147);
     const Color gold = Color(0xFFFFD700);

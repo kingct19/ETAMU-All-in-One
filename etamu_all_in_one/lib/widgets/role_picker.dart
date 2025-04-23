@@ -13,21 +13,22 @@ class RolePicker extends StatelessWidget {
     return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: roles.map((role) {
-          return ListTile(
-            leading: Icon(role['icon']),
-            title: Text('Login as ${role['label']}'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => LoginScreen(role: role['key']),
-                ),
+        children:
+            roles.map((role) {
+              return ListTile(
+                leading: Icon(role['icon']),
+                title: Text('Login as ${role['label']}'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LoginScreen(role: role['key']),
+                    ),
+                  );
+                },
               );
-            },
-          );
-        }).toList(),
+            }).toList(),
       ),
     );
   }

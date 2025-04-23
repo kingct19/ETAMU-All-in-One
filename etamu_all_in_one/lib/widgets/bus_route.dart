@@ -14,9 +14,12 @@ class _BusRoutePageState extends State<BusRoutePage> {
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://www.tamuc.edu/transportation-services/")); // ✅ Initial content
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..loadRequest(
+            Uri.parse("https://www.tamuc.edu/transportation-services/"),
+          ); // ✅ Initial content
   }
 
   void _openLiveMap() {
@@ -39,7 +42,10 @@ class _BusRoutePageState extends State<BusRoutePage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF002147),
                 foregroundColor: Colors.amber,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
               ),
               icon: const Icon(Icons.map),
               label: const Text('Live Map'),
@@ -57,9 +63,10 @@ class LiveMapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WebViewController controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://prideride.app")); // ✅ Live map
+    final WebViewController controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..loadRequest(Uri.parse("https://prideride.app")); // ✅ Live map
 
     return Scaffold(
       appBar: AppBar(
