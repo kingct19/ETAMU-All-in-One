@@ -25,8 +25,12 @@ class _CampusMapPageState extends State<CampusMapPage> {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setNavigationDelegate(
             NavigationDelegate(
-              onPageStarted: (_) => setState(() => _isLoading = true),
-              onPageFinished: (_) => setState(() => _isLoading = false),
+              onPageStarted: (_) {
+                if (mounted) setState(() => _isLoading = true);
+              },
+              onPageFinished: (_) {
+                if (mounted) setState(() => _isLoading = false);
+              },
             ),
           )
           ..loadRequest(Uri.parse('https://prideride.app'));
@@ -36,8 +40,12 @@ class _CampusMapPageState extends State<CampusMapPage> {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setNavigationDelegate(
             NavigationDelegate(
-              onPageStarted: (_) => setState(() => _isLoading = true),
-              onPageFinished: (_) => setState(() => _isLoading = false),
+              onPageStarted: (_) {
+                if (mounted) setState(() => _isLoading = true);
+              },
+              onPageFinished: (_) {
+                if (mounted) setState(() => _isLoading = false);
+              },
             ),
           )
           ..loadRequest(Uri.parse('https://www.tamuc.edu/map/'));
@@ -56,7 +64,7 @@ class _CampusMapPageState extends State<CampusMapPage> {
               onPressed: (index) {
                 setState(() {
                   _isBusMap = index == 0;
-                  _isLoading = true; // trigger loader on switch
+                  _isLoading = true;
                 });
               },
               borderRadius: BorderRadius.circular(8),
