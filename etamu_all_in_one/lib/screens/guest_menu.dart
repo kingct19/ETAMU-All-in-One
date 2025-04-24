@@ -59,83 +59,101 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ETAMUTheme.primary,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(ETAMUTheme.paddingMd),
-          child: Column(
-            children: [
-              InkWell(
-                onTap:
-                    () => setState(() => _showPreferences = !_showPreferences),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: ETAMUTheme.primary.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: ETAMUTheme.secondary),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '⚙ Preferences',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelLarge?.copyWith(color: Colors.white),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      appBar: AppBar(
+        backgroundColor: ETAMUTheme.primary,
+        elevation: 0,
+        title: const Text(
+          'Guest Menu',
+          style: TextStyle(
+            fontFamily: 'BreeSerif',
+            color: ETAMUTheme.secondary,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: ETAMUTheme.secondary),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // ⚙️ Preferences Section
+            InkWell(
+              onTap: () => setState(() => _showPreferences = !_showPreferences),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: ETAMUTheme.primary.withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: ETAMUTheme.secondary),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '⚙ Preferences',
+                      style: TextStyle(
+                        fontFamily: 'BreeSerif',
+                        fontSize: 16,
+                        color: Colors.white,
                       ),
-                      Icon(
-                        _showPreferences
-                            ? Icons.expand_less
-                            : Icons.expand_more,
-                        color: ETAMUTheme.secondary,
-                      ),
-                    ],
-                  ),
+                    ),
+                    Icon(
+                      _showPreferences ? Icons.expand_less : Icons.expand_more,
+                      color: ETAMUTheme.secondary,
+                    ),
+                  ],
                 ),
               ),
-              if (_showPreferences) ...[
-                const SizedBox(height: 12),
-                SwitchListTile(
-                  value: _darkMode,
-                  onChanged: (val) => setState(() => _darkMode = val),
-                  title: Text(
-                    'Dark Mode',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  ),
-                  secondary: const Icon(Icons.dark_mode, color: Colors.white),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.feedback, color: Colors.white),
-                  title: Text(
-                    'Submit Feedback',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  ),
-                  onTap: () {
-                    // TODO: Add feedback navigation
-                  },
-                ),
-              ],
+            ),
+            if (_showPreferences) ...[
               const SizedBox(height: 12),
-              Expanded(
-                child: GridView.builder(
-                  itemCount: _menuItems.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+              SwitchListTile(
+                value: _darkMode,
+                onChanged: (val) => setState(() => _darkMode = val),
+                title: const Text(
+                  'Dark Mode',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'BreeSerif',
                   ),
-                  itemBuilder: (context, index) {
-                    final item = _menuItems[index];
-                    return InkWell(
+                ),
+                secondary: const Icon(Icons.dark_mode, color: Colors.white),
+              ),
+              ListTile(
+                leading: const Icon(Icons.feedback, color: Colors.white),
+                title: const Text(
+                  'Submit Feedback',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'BreeSerif',
+                  ),
+                ),
+                onTap: () {
+                  // TODO: Add feedback
+                },
+              ),
+            ],
+            const SizedBox(height: 20),
+            // 🧩 Grid Shortcuts
+            Expanded(
+              child: GridView.builder(
+                itemCount: _menuItems.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemBuilder: (context, index) {
+                  final item = _menuItems[index];
+                  return Material(
+                    color: Colors.transparent,
+                    elevation: 6,
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -148,34 +166,39 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
                           ),
                         );
                       },
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       splashColor: ETAMUTheme.secondary.withOpacity(0.2),
+                      highlightColor: ETAMUTheme.secondary.withOpacity(0.1),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: ETAMUTheme.primary.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(12),
+                          color: ETAMUTheme.primary.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: ETAMUTheme.secondary),
                         ),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(item['icon'], color: Colors.white, size: 28),
-                            const SizedBox(height: 8),
+                            Icon(item['icon'], color: Colors.white, size: 32),
+                            const SizedBox(height: 10),
                             Text(
                               item['title'],
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(color: Colors.white),
+                              style: const TextStyle(
+                                fontFamily: 'BreeSerif',
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

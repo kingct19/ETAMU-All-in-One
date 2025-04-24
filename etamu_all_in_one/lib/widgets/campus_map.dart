@@ -11,6 +11,7 @@ class CampusMapPage extends StatefulWidget {
 
 class _CampusMapPageState extends State<CampusMapPage> {
   bool _isBusMap = true;
+  bool _isLoading = true;
 
   late final WebViewController _busController;
   late final WebViewController _campusController;
@@ -20,10 +21,25 @@ class _CampusMapPageState extends State<CampusMapPage> {
     super.initState();
 
     _busController =
-        WebViewController()..loadRequest(Uri.parse('https://prideride.app'));
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (_) => setState(() => _isLoading = true),
+              onPageFinished: (_) => setState(() => _isLoading = false),
+            ),
+          )
+          ..loadRequest(Uri.parse('https://prideride.app'));
 
     _campusController =
         WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (_) => setState(() => _isLoading = true),
+              onPageFinished: (_) => setState(() => _isLoading = false),
+            ),
+          )
           ..loadRequest(Uri.parse('https://www.tamuc.edu/map/'));
   }
 
@@ -40,12 +56,13 @@ class _CampusMapPageState extends State<CampusMapPage> {
               onPressed: (index) {
                 setState(() {
                   _isBusMap = index == 0;
+                  _isLoading = true; // trigger loader on switch
                 });
               },
               borderRadius: BorderRadius.circular(8),
-              selectedColor: const Color.fromARGB(255, 255, 252, 252),
+              selectedColor: Colors.white,
               fillColor: Colors.blue,
-              color: const Color.fromARGB(179, 0, 0, 0),
+              color: Colors.black87,
               borderColor: Colors.white54,
               selectedBorderColor: Colors.white,
               children: const [
@@ -62,8 +79,14 @@ class _CampusMapPageState extends State<CampusMapPage> {
           ),
         ],
       ),
-      body: WebViewWidget(
-        controller: _isBusMap ? _busController : _campusController,
+      body: Stack(
+        children: [
+          WebViewWidget(
+            controller: _isBusMap ? _busController : _campusController,
+          ),
+          if (_isLoading)
+            const Center(child: CircularProgressIndicator(color: Colors.amber)),
+        ],
       ),
     );
   }
