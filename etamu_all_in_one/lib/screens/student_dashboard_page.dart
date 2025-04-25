@@ -59,6 +59,7 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
+        leading: Container(),
         backgroundColor: navy,
         elevation: 0,
         title: const Text(

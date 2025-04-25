@@ -105,7 +105,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         UILocalNotificationDateInterpretation.absoluteTime,
                     matchDateTimeComponents: DateTimeComponents.time,
                     androidScheduleMode:
-                        AndroidScheduleMode.exactAllowWhileIdle, // ✅ FIXED
+                        AndroidScheduleMode.exactAllowWhileIdle,
                   );
 
                   Navigator.pop(context);
@@ -122,7 +122,12 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Calendar')),
+      appBar: AppBar(title: const Text('Calendar'), leading: Container()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddEventDialog,
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+      ),
       body: Column(
         children: [
           TableCalendar(

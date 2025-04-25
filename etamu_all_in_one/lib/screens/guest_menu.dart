@@ -61,6 +61,7 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
+        leading: Container(),
         backgroundColor: ETAMUTheme.primary,
         elevation: 0,
         title: const Text(

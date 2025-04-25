@@ -94,24 +94,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       onTap: _resetIdleTimer,
       onPanDown: (_) => _resetIdleTimer(),
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: navy,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.amber),
-              tooltip: 'Logout',
-              onPressed: () async {
-                await _auth.signOut();
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.remove('lastRole');
-
-                if (context.mounted) {
-                  Navigator.pushReplacementNamed(context, '/guest_home');
-                }
-              },
-            ),
-          ],
-        ),
         body: _tabs[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,

@@ -55,6 +55,7 @@ class _CampusMapPageState extends State<CampusMapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
         title: const Text('Maps'),
         actions: [
           Padding(

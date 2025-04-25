@@ -53,6 +53,7 @@ class RoleSelectionPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
         backgroundColor: const Color(0xFF002147),
         title: const Text(
           'Select Role',
