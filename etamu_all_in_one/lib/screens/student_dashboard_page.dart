@@ -15,26 +15,31 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
       'title': 'myLEO',
       'url': 'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
       'icon': Icons.school,
+      'color': Color(0xFF002147), // Navy Blue
     },
     {
       'title': 'My Classes (D2L)',
       'url': 'https://myleoonline.tamuc.edu/d2l/login',
-      'icon': Icons.laptop_chromebook,
+      'icon': Icons.laptop_mac,
+      'color': Color(0xFF002147), // Gold
     },
     {
       'title': 'Library Resources',
       'url': 'https://idp.tamuc.edu/idp/profile/cas/login?execution=e8s1',
       'icon': Icons.menu_book,
+      'color': Color(0xFF002147), // Dark Blue-Gray
     },
     {
       'title': 'Graduate DegreeWorks',
       'url': 'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
       'icon': Icons.account_balance,
+      'color': Color(0xFF002147), // Navy Blue
     },
     {
       'title': 'Undergraduate DegreeWorks',
       'url': 'https://leoportal.tamuc.edu/uPortal/f/welcome/normal/render.uP',
       'icon': Icons.school_outlined,
+      'color': Color(0xFF002147), // Gold
     },
   ];
 
@@ -52,81 +57,78 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color navy = Color(0xFF002147);
-    const Color gold = Color(0xFFFFD700);
-    const Color cardColor = Color(0xFF08335B);
+    const Color bgColor = Color(0xFFF8F9FB);
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        leading: Container(),
-        backgroundColor: navy,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: const SizedBox(),
         title: const Text(
           'Student Dashboard',
-          style: TextStyle(fontFamily: 'BreeSerif', color: gold),
+          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.black87),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFFD700), Color(0xFFF7C400)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${_getGreeting()}, ${_getUserName()} 👋',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BreeSerif',
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${_getGreeting()}, ${_getUserName()}! 👋',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'BreeSerif',
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Your campus life starts here.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                      fontFamily: 'BreeSerif',
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 8),
+              const Text(
+                'Explore your campus tools below',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Grid of student tools
-            GridView.builder(
-              itemCount: _studentTools.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
+              // Search bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 6,
+                      color: Colors.black12,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search),
+                    hintText: 'Search...',
+                    border: InputBorder.none,
+                  ),
+                ),
               ),
-              itemBuilder: (context, index) {
-                final item = _studentTools[index];
-                return Material(
-                  color: Colors.transparent,
-                  elevation: 6,
-                  borderRadius: BorderRadius.circular(16),
-                  child: InkWell(
+              const SizedBox(height: 24),
+
+              // Tool grid cards
+              GridView.builder(
+                itemCount: _studentTools.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.0,
+                ),
+                itemBuilder: (context, index) {
+                  final item = _studentTools[index];
+                  return GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
@@ -139,38 +141,42 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
                         ),
                       );
                     },
-                    borderRadius: BorderRadius.circular(16),
-                    splashColor: gold.withOpacity(0.2),
-                    highlightColor: gold.withOpacity(0.1),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: gold, width: 1),
+                        color: item['color'],
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: item['color'].withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(item['icon'], size: 36, color: Colors.white),
+                          Icon(item['icon'], size: 30, color: Colors.white),
                           const SizedBox(height: 12),
                           Text(
                             item['title'],
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              fontFamily: 'BreeSerif',
                               fontSize: 14,
+                              fontFamily: 'BreeSerif',
                               color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,69 +1,70 @@
-import 'package:etamu_all_in_one/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'role_picker.dart'; // ✅ Ensure correct import
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RoleSelectionPage extends StatelessWidget {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final String currentRole;
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
 
-  RoleSelectionPage({super.key, this.currentRole = 'guest'});
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('lastRole');
+    await FirebaseAuth.instance.signOut();
+    if (context.mounted) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/guest_home', // ✅ Make sure this route exists in your app
+        (route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bool isLoggedIn = _auth.currentUser != null;
+    const Color primary = Color(0xFF002147);
+    const Color secondary = Color(0xFFFFD700);
 
     return Scaffold(
-      appBar: AppBar(
-        leading:
-            Navigator.canPop(context)
-                ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.pop(context),
-                )
-                : null,
-        backgroundColor: const Color(0xFF002147),
-        title: const Text(
-          'Switch Role',
-          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.white),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Settings'), backgroundColor: primary),
+      backgroundColor: Colors.white,
       body: ListView(
         children: [
-          ListTile(
-            leading: const Icon(Icons.school),
-            title: const Text('Student Portal'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const LoginScreen(role: 'student'),
-                ),
-              );
-            },
-            enabled: currentRole != 'student',
-          ),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Faculty Portal'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const LoginScreen(role: 'faculty'),
-                ),
-              );
-            },
-            enabled: currentRole != 'faculty',
-          ),
-          if (currentRole != 'guest')
-            ListTile(
-              leading: const Icon(Icons.visibility),
-              title: const Text('Continue as Guest'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/guest');
-              },
+          const SizedBox(height: 24),
+          const ListTile(
+            leading: Icon(Icons.account_circle, color: primary),
+            title: Text(
+              'Logged in as',
+              style: TextStyle(fontFamily: 'BreeSerif'),
             ),
+            subtitle: Text('Student or Faculty'),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.info_outline, color: primary),
+            title: const Text('About ETAMU'),
+            onTap: () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'ETAMU All-in-One',
+                applicationVersion: '1.0.0',
+                applicationLegalese: '© 2025 East Texas A&M University',
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.feedback, color: primary),
+            title: const Text('Submit Feedback'),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Feedback page coming soon!')),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('Logout'),
+            onTap: () => _logout(context),
+          ),
         ],
       ),
     );

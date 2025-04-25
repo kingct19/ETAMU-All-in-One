@@ -18,48 +18,56 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
       'title': 'Apply to ETAMU',
       'url': 'https://www.tamuc.edu/apply/',
       'icon': Icons.school,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Academic Calendar',
       'url': 'https://calendar.tamuc.edu/academic',
       'icon': Icons.calendar_month,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Directory',
       'url': 'https://appsprod.tamuc.edu/pb/Default.asp?search=keywordresult',
       'icon': Icons.contact_page,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Campus Map',
       'url': 'https://www.tamuc.edu/map/',
       'icon': Icons.map,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Parking',
       'url': 'https://www.tamuc.edu/parking/',
       'icon': Icons.local_parking,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Athletics',
       'url': 'https://lionathletics.com/',
       'icon': Icons.sports_soccer,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Campus Rec',
       'url': 'https://www.tamuc.edu/campusrec/',
       'icon': Icons.fitness_center,
+      'color': Color(0xFF002147),
     },
     {
       'title': 'Lion Safe App',
       'url': 'https://apps.apple.com/us/app/lion-safe/id1434558723',
       'icon': Icons.shield,
+      'color': Color(0xFF002147),
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: Container(),
         backgroundColor: ETAMUTheme.primary,
@@ -139,6 +147,7 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
               ),
             ],
             const SizedBox(height: 20),
+
             // 🧩 Grid Shortcuts
             Expanded(
               child: GridView.builder(
@@ -172,7 +181,7 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
                       highlightColor: ETAMUTheme.secondary.withOpacity(0.1),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: ETAMUTheme.primary.withOpacity(0.9),
+                          color: item['color'],
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: ETAMUTheme.secondary),
                         ),

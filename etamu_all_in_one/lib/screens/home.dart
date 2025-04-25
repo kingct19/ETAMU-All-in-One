@@ -10,6 +10,7 @@ import 'package:etamu_all_in_one/widgets/messages_tab.dart';
 import 'package:etamu_all_in_one/widgets/role_selection_page.dart';
 import 'package:etamu_all_in_one/screens/student_dashboard_page.dart';
 import 'package:etamu_all_in_one/screens/faculty_dashboard_page.dart';
+import 'package:etamu_all_in_one/widgets/settings_page.dart';
 
 class Home extends StatefulWidget {
   final String role; // 'student' or 'faculty'
@@ -32,7 +33,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     const CalendarPage(),
     const MessagesTab(),
     const CampusMapPage(),
-    const RoleSelectionPage(currentRole: 'student'), // switch role placeholder
+    widget.role == 'guest'
+        ? RoleSelectionPage(currentRole: widget.role)
+        : const SettingsPage(),
   ];
 
   void _showRoleSelector() {
@@ -123,9 +126,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               label: 'Messages',
             ),
             const BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Role',
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person),
+              label: widget.role == 'guest' ? 'Role' : 'Settings',
             ),
           ],
         ),
