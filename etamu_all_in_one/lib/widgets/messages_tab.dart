@@ -35,10 +35,14 @@ class _MessagesTabState extends State<MessagesTab> {
           ..loadRequest(Uri.parse('https://www.tamuc.edu/News'));
   }
 
+  Future<void> _refreshPage() async {
+    await _controller.reload();
+  }
+
   @override
   Widget build(BuildContext context) {
-    const Color background = Color(0xFF002147); // ETAMU Navy Blue
-    const Color gold = Color(0xFFFFD700); // ETAMU Gold
+    const Color background = Color(0xFF002147); // Navy
+    const Color gold = Color(0xFFFFD700); // Gold
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +57,12 @@ class _MessagesTabState extends State<MessagesTab> {
       ),
       body: Stack(
         children: [
-          WebViewWidget(controller: _controller),
+          RefreshIndicator(
+            color: gold,
+            backgroundColor: background,
+            onRefresh: _refreshPage,
+            child: WebViewWidget(controller: _controller),
+          ),
           if (_isLoading)
             const Center(child: CircularProgressIndicator(color: gold)),
         ],

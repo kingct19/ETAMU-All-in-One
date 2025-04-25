@@ -1,10 +1,15 @@
-// lib/screens/faculty_dashboard_page.dart
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:etamu_all_in_one/widgets/guest_webview.dart';
 
-class FacultyDashboardPage extends StatelessWidget {
+class FacultyDashboardPage extends StatefulWidget {
   const FacultyDashboardPage({super.key});
 
+  @override
+  State<FacultyDashboardPage> createState() => _FacultyDashboardPageState();
+}
+
+class _FacultyDashboardPageState extends State<FacultyDashboardPage> {
   final List<Map<String, dynamic>> _facultyTools = const [
     {
       'title': 'myLEO',
@@ -39,19 +44,89 @@ class FacultyDashboardPage extends StatelessWidget {
     },
   ];
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
+  String _getUserName() {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.displayName ?? 'Lion';
+  }
+
   @override
   Widget build(BuildContext context) {
+    const Color bgColor = Color(0xFFF8F9FB);
+    const Color cardColor = Color(0xFF08335B);
+    const Color gold = Color(0xFFFFD700);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF002147),
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const SizedBox(),
+        title: const Text(
+          'Faculty Dashboard',
+          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.black87),
+        ),
+      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            children:
-                _facultyTools.map((item) {
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${_getGreeting()}, ${_getUserName()} 👋',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BreeSerif',
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Your faculty tools are below',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 6,
+                      color: Colors.black12,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search),
+                    hintText: 'Search...',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              GridView.builder(
+                itemCount: _facultyTools.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.0,
+                ),
+                itemBuilder: (context, index) {
+                  final item = _facultyTools[index];
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -67,32 +142,40 @@ class FacultyDashboardPage extends StatelessWidget {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF08335B),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFFFFD700),
-                          width: 1,
-                        ),
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: gold),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(item['icon'], color: Colors.white, size: 36),
+                          Icon(item['icon'], size: 30, color: Colors.white),
                           const SizedBox(height: 12),
                           Text(
                             item['title'],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'BreeSerif',
-                              fontSize: 14,
-                            ),
                             textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'BreeSerif',
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   );
-                }).toList(),
+                },
+              ),
+            ],
           ),
         ),
       ),

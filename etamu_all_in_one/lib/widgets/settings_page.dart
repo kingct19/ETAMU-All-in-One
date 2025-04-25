@@ -1,105 +1,275 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
-  Future<void> _logoutConfirmed(BuildContext context) async {
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  File? _profileImage;
+  String _userName = '';
+  final TextEditingController _nameController = TextEditingController();
+  final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('lastRole');
-    await FirebaseAuth.instance.signOut();
+    setState(() {
+      _userName = prefs.getString('userName') ?? 'Lion';
+      _nameController.text = _userName;
+    });
+  }
 
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('You have been logged out.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+  Future<void> _saveName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userName', name);
+    setState(() {
+      _userName = name;
+    });
+  }
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/guest', // Make sure this route is defined
-        (route) => false,
-      );
+  Future<void> _pickImage() async {
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() => _profileImage = File(picked.path));
     }
   }
 
-  void _showLogoutConfirmation(BuildContext context) {
-    showDialog(
+  Future<void> _logout(BuildContext context) async {
+    final confirm = await showDialog<bool>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
-            title: const Text('Confirm Logout'),
-            content: const Text('Are you sure you want to logout?'),
+          (_) => AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to log out?'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(ctx),
+                onPressed: () => Navigator.pop(context, false),
                 child: const Text('Cancel'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx); // Close dialog first
-                  _logoutConfirmed(context);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
                 child: const Text('Logout'),
               ),
             ],
           ),
     );
+
+    if (confirm == true) {
+      await SharedPreferences.getInstance().then(
+        (prefs) => prefs.remove('lastRole'),
+      );
+      await FirebaseAuth.instance.signOut();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You have been logged out.')),
+        );
+        Navigator.pushNamedAndRemoveUntil(context, '/guest', (route) => false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     const Color primary = Color(0xFF002147);
+    const Color secondary = Color(0xFFFFD700);
+
+    final TextStyle optionTextStyle = const TextStyle(
+      fontFamily: 'BreeSerif',
+      fontSize: 18,
+      color: Colors.black87,
+    );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), backgroundColor: primary),
-      backgroundColor: Colors.white,
-      body: ListView(
-        children: [
-          const SizedBox(height: 24),
-          const ListTile(
-            leading: Icon(Icons.account_circle, color: primary),
-            title: Text(
-              'Logged in as',
-              style: TextStyle(fontFamily: 'BreeSerif'),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              decoration: const BoxDecoration(
+                color: primary,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(32),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 54,
+                      backgroundImage:
+                          _profileImage != null
+                              ? FileImage(_profileImage!)
+                              : const AssetImage('assets/images/etamu_logo.jpg')
+                                  as ImageProvider,
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.edit, size: 18, color: primary),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: TextField(
+                      controller: _nameController,
+                      textAlign: TextAlign.center,
+                      onSubmitted: _saveName,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'BreeSerif',
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: 'Your Name',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
-            subtitle: Text('Student or Faculty'),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.info_outline, color: primary),
-            title: const Text('About ETAMU'),
-            onTap: () {
-              showAboutDialog(
-                context: context,
-                applicationName: 'ETAMU All-in-One',
-                applicationVersion: '1.0.0',
-                applicationLegalese: '© 2025 East Texas A&M University',
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.feedback, color: primary),
-            title: const Text('Submit Feedback'),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Feedback page coming soon!')),
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('Logout'),
-            onTap: () => _showLogoutConfirmation(context),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  Card(
+                    color: primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      leading: Icon(
+                        Icons.settings,
+                        size: 28,
+                        color: Colors.white,
+                      ),
+                      title: Text(
+                        'App Settings',
+                        style: optionTextStyle.copyWith(color: Colors.white),
+                      ),
+                      onTap: () {},
+                    ),
+                  ),
+                  Card(
+                    color: primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      leading: Icon(
+                        Icons.help_outline,
+                        size: 28,
+                        color: Colors.white,
+                      ),
+                      title: Text(
+                        'Help & Support',
+                        style: optionTextStyle.copyWith(color: Colors.white),
+                      ),
+                      onTap: () {},
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(thickness: 1),
+                  const SizedBox(height: 12),
+                  Card(
+                    color: primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      leading: Icon(
+                        Icons.info_outline,
+                        size: 28,
+                        color: secondary,
+                      ),
+                      title: Text(
+                        'About ETAMU',
+                        style: optionTextStyle.copyWith(color: Colors.white),
+                      ),
+                      onTap: () {
+                        showAboutDialog(
+                          context: context,
+                          applicationName: 'ETAMU All-in-One',
+                          applicationVersion: '1.0.0',
+                          applicationLegalese:
+                              '© 2025 East Texas A&M University',
+                        );
+                      },
+                    ),
+                  ),
+                  Card(
+                    color: primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      leading: const Icon(
+                        Icons.logout,
+                        size: 28,
+                        color: Colors.red,
+                      ),
+                      title: Text(
+                        'Logout',
+                        style: optionTextStyle.copyWith(color: Colors.white),
+                      ),
+                      onTap: () => _logout(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }
 }
-// This code defines a SettingsPage widget in Flutter. It includes a logout confirmation dialog and handles user logout using Firebase Authentication. The page also displays user information and provides options for feedback and about the app.
