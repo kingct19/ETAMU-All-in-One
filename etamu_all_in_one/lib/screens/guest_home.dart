@@ -4,7 +4,6 @@ import 'guest_menu.dart';
 import '../widgets/campus_map.dart';
 import '../widgets/messages_tab.dart';
 import '../widgets/role_selection_page.dart';
-import '../widgets/guest_webview.dart';
 
 class GuestHomePage extends StatefulWidget {
   const GuestHomePage({super.key});
@@ -38,7 +37,7 @@ class _GuestHomePageState extends State<GuestHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
+          BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: 'News'),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Role'),
         ],

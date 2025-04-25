@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:etamu_all_in_one/widgets/role_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -122,8 +121,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               label: 'Calendar',
             ),
             const BottomNavigationBarItem(
-              icon: Icon(Icons.message),
-              label: 'Messages',
+              icon: Icon(Icons.newspaper),
+              label: 'News',
             ),
             const BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
             BottomNavigationBarItem(

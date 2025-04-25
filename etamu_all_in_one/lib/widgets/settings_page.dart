@@ -54,7 +54,6 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color primary = Color(0xFF002147);
-    const Color secondary = Color(0xFFFFD700);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings'), backgroundColor: primary),
