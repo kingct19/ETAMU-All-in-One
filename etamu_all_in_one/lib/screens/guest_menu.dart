@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:etamu_all_in_one/theme.dart';
 import '../widgets/guest_webview.dart';
+import '../theme.dart';
 
 class GuestMenuTab extends StatefulWidget {
   const GuestMenuTab({super.key});
@@ -18,197 +18,168 @@ class _GuestMenuTabState extends State<GuestMenuTab> {
       'title': 'Apply to ETAMU',
       'url': 'https://www.tamuc.edu/apply/',
       'icon': Icons.school,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Academic Calendar',
       'url': 'https://calendar.tamuc.edu/academic',
       'icon': Icons.calendar_month,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Directory',
       'url': 'https://appsprod.tamuc.edu/pb/Default.asp?search=keywordresult',
       'icon': Icons.contact_page,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Campus Map',
       'url': 'https://www.tamuc.edu/map/',
       'icon': Icons.map,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Parking',
       'url': 'https://www.tamuc.edu/parking/',
       'icon': Icons.local_parking,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Athletics',
       'url': 'https://lionathletics.com/',
       'icon': Icons.sports_soccer,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Campus Rec',
       'url': 'https://www.tamuc.edu/campusrec/',
       'icon': Icons.fitness_center,
-      'color': Color(0xFF002147),
     },
     {
       'title': 'Lion Safe App',
       'url': 'https://apps.apple.com/us/app/lion-safe/id1434558723',
       'icon': Icons.shield,
-      'color': Color(0xFF002147),
     },
   ];
 
   @override
   Widget build(BuildContext context) {
+    const Color background = Color(0xFFF8F9FB);
+    const Color navy = Color(0xFF002147);
+    const Color gold = Color(0xFFFFD700);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: background,
       appBar: AppBar(
-        leading: Container(),
-        backgroundColor: ETAMUTheme.primary,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: const SizedBox(),
         title: const Text(
-          'Guest Menu',
-          style: TextStyle(
-            fontFamily: 'BreeSerif',
-            color: ETAMUTheme.secondary,
-          ),
+          'Guest Dashboard',
+          style: TextStyle(fontFamily: 'BreeSerif', color: Colors.black87),
         ),
-        iconTheme: const IconThemeData(color: ETAMUTheme.secondary),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // ⚙️ Preferences Section
-            InkWell(
-              onTap: () => setState(() => _showPreferences = !_showPreferences),
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Welcome, Visitor 👋',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BreeSerif',
                 ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Explore ETAMU resources below',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+              const SizedBox(height: 20),
+
+              // Search bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: ETAMUTheme.primary.withOpacity(0.85),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: ETAMUTheme.secondary),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '⚙ Preferences',
-                      style: TextStyle(
-                        fontFamily: 'BreeSerif',
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(
-                      _showPreferences ? Icons.expand_less : Icons.expand_more,
-                      color: ETAMUTheme.secondary,
+                  boxShadow: const [
+                    BoxShadow(
+                      blurRadius: 6,
+                      color: Colors.black12,
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
-              ),
-            ),
-            if (_showPreferences) ...[
-              const SizedBox(height: 12),
-              SwitchListTile(
-                value: _darkMode,
-                onChanged: (val) => setState(() => _darkMode = val),
-                title: const Text(
-                  'Dark Mode',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'BreeSerif',
+                child: const TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search),
+                    hintText: 'Search...',
+                    border: InputBorder.none,
                   ),
                 ),
-                secondary: const Icon(Icons.dark_mode, color: Colors.white),
               ),
-              ListTile(
-                leading: const Icon(Icons.feedback, color: Colors.white),
-                title: const Text(
-                  'Submit Feedback',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'BreeSerif',
-                  ),
-                ),
-                onTap: () {
-                  // TODO: Add feedback
-                },
-              ),
-            ],
-            const SizedBox(height: 20),
 
-            // 🧩 Grid Shortcuts
-            Expanded(
-              child: GridView.builder(
+              const SizedBox(height: 24),
+
+              // Grid cards
+              GridView.builder(
                 itemCount: _menuItems.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
+                  childAspectRatio: 1.0,
                 ),
                 itemBuilder: (context, index) {
                   final item = _menuItems[index];
-                  return Material(
-                    color: Colors.transparent,
-                    elevation: 6,
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => GuestWebViewPage(
-                                  title: item['title'],
-                                  url: item['url'],
-                                ),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      splashColor: ETAMUTheme.secondary.withOpacity(0.2),
-                      highlightColor: ETAMUTheme.secondary.withOpacity(0.1),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: item['color'],
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: ETAMUTheme.secondary),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(item['icon'], color: Colors.white, size: 32),
-                            const SizedBox(height: 10),
-                            Text(
-                              item['title'],
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'BreeSerif',
-                                fontSize: 14,
-                                color: Colors.white,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => GuestWebViewPage(
+                                title: item['title'],
+                                url: item['url'],
                               ),
-                            ),
-                          ],
                         ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: navy,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: navy.withOpacity(0.2),
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(item['icon'], color: Colors.white, size: 32),
+                          const SizedBox(height: 10),
+                          Text(
+                            item['title'],
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'BreeSerif',
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
