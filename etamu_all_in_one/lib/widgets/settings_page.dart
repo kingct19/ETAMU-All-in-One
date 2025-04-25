@@ -93,181 +93,194 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 40),
-              decoration: const BoxDecoration(
-                color: primary,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(32),
+        child: Padding(
+          padding: EdgeInsets.only(top: 80),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: CircleAvatar(
+                  radius: 54,
+                  backgroundImage:
+                      _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : const AssetImage('assets/images/etamu_logo.jpg')
+                              as ImageProvider,
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.edit, size: 18, color: primary),
+                    ),
+                  ),
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 54,
-                      backgroundImage:
-                          _profileImage != null
-                              ? FileImage(_profileImage!)
-                              : const AssetImage('assets/images/etamu_logo.jpg')
-                                  as ImageProvider,
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.edit, size: 18, color: primary),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: TextField(
+                  controller: _nameController,
+                  textAlign: TextAlign.center,
+                  onSubmitted: _saveName,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontFamily: 'BreeSerif',
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'Your Name',
+                    hintStyle: TextStyle(color: Colors.black54),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
                         ),
+                        leading: Icon(
+                          Icons.person,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Edit Profile',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {
+                          // TODO: Implement edit account info functionality
+                        },
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TextField(
-                      controller: _nameController,
-                      textAlign: TextAlign.center,
-                      onSubmitted: _saveName,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontFamily: 'BreeSerif',
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Your Name',
-                        hintStyle: TextStyle(color: Colors.white54),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.settings,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'App Settings',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {},
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.help_outline,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Help & Support',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {},
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Divider(thickness: 1),
+                    const SizedBox(height: 12),
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.info_outline,
+                          size: 28,
+                          color: secondary,
+                        ),
+                        title: Text(
+                          'About ETAMU',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {
+                          showAboutDialog(
+                            context: context,
+                            applicationName: 'ETAMU All-in-One',
+                            applicationVersion: '1.0.0',
+                            applicationLegalese:
+                                '© 2025 East Texas A&M University',
+                          );
+                        },
+                      ),
+                    ),
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: const Icon(
+                          Icons.logout,
+                          size: 28,
+                          color: Colors.red,
+                        ),
+                        title: Text(
+                          'Logout',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () => _logout(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  Card(
-                    color: primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      leading: Icon(
-                        Icons.settings,
-                        size: 28,
-                        color: Colors.white,
-                      ),
-                      title: Text(
-                        'App Settings',
-                        style: optionTextStyle.copyWith(color: Colors.white),
-                      ),
-                      onTap: () {},
-                    ),
-                  ),
-                  Card(
-                    color: primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      leading: Icon(
-                        Icons.help_outline,
-                        size: 28,
-                        color: Colors.white,
-                      ),
-                      title: Text(
-                        'Help & Support',
-                        style: optionTextStyle.copyWith(color: Colors.white),
-                      ),
-                      onTap: () {},
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Divider(thickness: 1),
-                  const SizedBox(height: 12),
-                  Card(
-                    color: primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      leading: Icon(
-                        Icons.info_outline,
-                        size: 28,
-                        color: secondary,
-                      ),
-                      title: Text(
-                        'About ETAMU',
-                        style: optionTextStyle.copyWith(color: Colors.white),
-                      ),
-                      onTap: () {
-                        showAboutDialog(
-                          context: context,
-                          applicationName: 'ETAMU All-in-One',
-                          applicationVersion: '1.0.0',
-                          applicationLegalese:
-                              '© 2025 East Texas A&M University',
-                        );
-                      },
-                    ),
-                  ),
-                  Card(
-                    color: primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      leading: const Icon(
-                        Icons.logout,
-                        size: 28,
-                        color: Colors.red,
-                      ),
-                      title: Text(
-                        'Logout',
-                        style: optionTextStyle.copyWith(color: Colors.white),
-                      ),
-                      onTap: () => _logout(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
