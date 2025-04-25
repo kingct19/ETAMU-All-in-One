@@ -20,8 +20,16 @@ class _GuestHomeTabState extends State<GuestHomeTab> {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setNavigationDelegate(
             NavigationDelegate(
-              onPageStarted: (_) => setState(() => _isLoading = true),
-              onPageFinished: (_) => setState(() => _isLoading = false),
+              onPageStarted: (_) {
+                if (mounted) {
+                  setState(() => _isLoading = true);
+                }
+              },
+              onPageFinished: (_) {
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                }
+              },
             ),
           )
           ..loadRequest(Uri.parse('https://www.tamuc.edu'));

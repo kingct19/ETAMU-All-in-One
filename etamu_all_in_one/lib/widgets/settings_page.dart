@@ -25,24 +25,54 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final storedName = prefs.getString('userName_$uid') ?? 'Lion';
     setState(() {
-      _userName = prefs.getString('userName') ?? 'Lion';
+      _userName = storedName;
       _nameController.text = _userName;
     });
+    final imagePath = prefs.getString('userImage_$uid');
+    if (imagePath != null && File(imagePath).existsSync()) {
+      setState(() {
+        _profileImage = File(imagePath);
+      });
+    }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null &&
+        (user.displayName == null || user.displayName!.isEmpty)) {
+      await user.updateDisplayName(_userName);
+    }
   }
 
   Future<void> _saveName(String name) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userName', name);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      await prefs.setString('userName_$uid', name);
+    }
     setState(() {
       _userName = name;
     });
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await user.updateDisplayName(name);
+    }
+  }
+
+  String _getUserName() {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.displayName ?? _userName;
   }
 
   Future<void> _pickImage() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
       setState(() => _profileImage = File(picked.path));
+      final prefs = await SharedPreferences.getInstance();
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        await prefs.setString('userImage_$uid', picked.path);
+      }
     }
   }
 
@@ -164,7 +194,36 @@ class _SettingsPageState extends State<SettingsPage> {
                           style: optionTextStyle.copyWith(color: Colors.white),
                         ),
                         onTap: () {
-                          // TODO: Implement edit account info functionality
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              final controller = TextEditingController(
+                                text: _userName,
+                              );
+                              return AlertDialog(
+                                title: const Text('Edit Profile Name'),
+                                content: TextField(
+                                  controller: controller,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Enter your name',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _saveName(controller.text);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Save'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                       ),
                     ),

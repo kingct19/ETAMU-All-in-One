@@ -21,14 +21,18 @@ class _MessagesTabState extends State<MessagesTab> {
           ..setNavigationDelegate(
             NavigationDelegate(
               onPageStarted: (_) {
-                setState(() {
-                  _isLoading = true;
-                });
+                if (mounted) {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                }
               },
               onPageFinished: (_) {
-                setState(() {
-                  _isLoading = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
               },
             ),
           )
