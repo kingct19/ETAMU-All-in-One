@@ -114,6 +114,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   final email = _registerEmailController.text.trim();
                   final pass = _registerPasswordController.text;
 
+                  // Validate email format based on role
+                  if (widget.role == 'student') {
+                    if (!email.endsWith('@leomail.tamuc.edu')) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Students must use a leomail.tamuc.edu email address.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                  } else if (widget.role == 'faculty') {
+                    if (!email.endsWith('@tamuc.edu') ||
+                        email.contains('@leomail.tamuc.edu')) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Faculty must use a tamuc.edu email address (not leomail).',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                  }
+
                   try {
                     await _auth.createUserWithEmailAndPassword(
                       email: email,
