@@ -31,6 +31,7 @@ dependencies:
   html: ^0.15.6
   xml: ^6.5.0
   image_picker: ^1.0.4
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -48,3 +49,10 @@ flutter:
     - family: BreeSerif
       fonts:
         - asset: assets/fonts/BreeSerif-Regular.ttf
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/etamu_logo.jpg"
+  adaptive_icon_background: "#002147"
+  adaptive_icon_foreground: "assets/images/etamu_logo.jpg"
