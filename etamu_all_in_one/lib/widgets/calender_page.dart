@@ -29,9 +29,36 @@ class CalendarPage extends StatefulWidget {
           ..sort((a, b) => a.key.compareTo(b.key));
 
     if (upcoming.isNotEmpty) {
-      return {upcoming.first.key: upcoming.first.value};
+      // Return all upcoming events, not just the first one
+      return Map.fromEntries(upcoming);
     }
     return {};
+  }
+
+  static Future<void> deleteEventFromDashboard(String eventTitle) async {
+    final prefs = await SharedPreferences.getInstance();
+    final eventsString = prefs.getString('calendar_events');
+    if (eventsString == null) return;
+
+    final decoded = jsonDecode(eventsString) as Map<String, dynamic>;
+    final Map<DateTime, List<String>> events = decoded.map((key, value) {
+      final date = DateTime.parse(key);
+      final list = List<String>.from(value);
+      return MapEntry(date, list);
+    });
+
+    final updatedEvents = <DateTime, List<String>>{};
+    for (var entry in events.entries) {
+      final updatedList = List<String>.from(entry.value)..remove(eventTitle);
+      if (updatedList.isNotEmpty) {
+        updatedEvents[entry.key] = updatedList;
+      }
+    }
+
+    final encoded = jsonEncode(
+      updatedEvents.map((key, value) => MapEntry(key.toIso8601String(), value)),
+    );
+    await prefs.setString('calendar_events', encoded);
   }
 
   @override
@@ -99,7 +126,11 @@ class _CalendarPageState extends State<CalendarPage> {
       _events.map((key, value) => MapEntry(key.toIso8601String(), value)),
     );
     await prefs.setString('calendar_events', encoded);
+    // Refresh UI after saving events
     await _loadEvents();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _showAddEventDialog() {
@@ -183,12 +214,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
   List<String> _getEventsForDay(DateTime day) => _events[day] ?? [];
 
-  void _deleteEvent(int index) async {
-    if (_selectedDay != null && _events[_selectedDay!] != null) {
+  void _deleteEvent(DateTime day, int index) async {
+    if (_events.containsKey(day)) {
       setState(() {
-        _events[_selectedDay!]!.removeAt(index);
-        if (_events[_selectedDay!]!.isEmpty) {
-          _events.remove(_selectedDay!);
+        _events[day]!.removeAt(index);
+        if (_events[day]!.isEmpty) {
+          _events.remove(day);
         }
       });
       await _saveEvents();
@@ -250,7 +281,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.redAccent),
                       onPressed: () {
-                        _deleteEvent(entry.key);
+                        _deleteEvent(_selectedDay!, entry.key);
                       },
                     ),
                   ),

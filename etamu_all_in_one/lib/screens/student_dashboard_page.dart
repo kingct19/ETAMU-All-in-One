@@ -304,12 +304,44 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
                               ),
                             ),
                             direction: DismissDirection.startToEnd,
+                            confirmDismiss: (direction) async {
+                              return await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Confirm Delete'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this event?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.of(
+                                              context,
+                                            ).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed:
+                                            () =>
+                                                Navigator.of(context).pop(true),
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
                             onDismissed: (direction) async {
                               final prefs =
                                   await SharedPreferences.getInstance();
                               final savedEvents = prefs.getString(
                                 'calendar_events',
                               );
+
                               if (savedEvents != null) {
                                 final Map<String, dynamic> decoded = json
                                     .decode(savedEvents);
@@ -318,11 +350,13 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
                                         .toIso8601String()
                                         .split('T')
                                         .first;
+
                                 if (decoded.containsKey(dateKey)) {
-                                  final List<String> titles = List<String>.from(
+                                  List<String> titles = List<String>.from(
                                     decoded[dateKey],
                                   );
                                   titles.remove(eventTitle);
+
                                   if (titles.isEmpty) {
                                     decoded.remove(dateKey);
                                   } else {
@@ -334,11 +368,24 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
                                   );
                                 }
                               }
-                              setState(() {
-                                _upcomingEvents.removeAt(
-                                  index,
-                                ); // Immediately remove from the list
+
+                              // Safely remove after frame
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _upcomingEvents.removeAt(index);
+                                });
                               });
+
+                              // Refresh events for Calendar and Dashboard
+                              await _loadEvents();
+                              await loadUpcomingEvents();
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Event deleted successfully ✅'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
                             },
                             child: InkWell(
                               onTap: () {
