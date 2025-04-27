@@ -4,9 +4,35 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
+
+  static Future<Map<DateTime, List<String>>> getUpcomingEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final eventsString = prefs.getString('calendar_events');
+
+    if (eventsString == null) return {};
+
+    final decoded = jsonDecode(eventsString) as Map<String, dynamic>;
+    final parsedEvents = decoded.map((key, value) {
+      final date = DateTime.parse(key);
+      final list = List<String>.from(value);
+      return MapEntry(date, list);
+    });
+
+    final now = DateTime.now();
+    final upcoming =
+        parsedEvents.entries.where((entry) => entry.key.isAfter(now)).toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
+
+    if (upcoming.isNotEmpty) {
+      return {upcoming.first.key: upcoming.first.value};
+    }
+    return {};
+  }
 
   @override
   State<CalendarPage> createState() => _CalendarPageState();
@@ -17,6 +43,8 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime? _selectedDay;
   Map<DateTime, List<String>> _events = {};
 
+  static Map<DateTime, List<String>> savedEvents = {};
+
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -24,6 +52,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     _initializeNotifications();
+    _loadEvents();
   }
 
   Future<void> _initializeNotifications() async {
@@ -32,9 +61,45 @@ class _CalendarPageState extends State<CalendarPage> {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
-    const initSettings = InitializationSettings(android: androidSettings);
+    const iosSettings = DarwinInitializationSettings();
+
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
     await _notificationsPlugin.initialize(initSettings);
+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
+  }
+
+  Future<void> _loadEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final eventsString = prefs.getString('calendar_events');
+    if (eventsString != null) {
+      final decoded = jsonDecode(eventsString) as Map<String, dynamic>;
+      _events = decoded.map((key, value) {
+        final date = DateTime.parse(key);
+        final list = List<String>.from(value);
+        return MapEntry(date, list);
+      });
+      savedEvents = Map.from(_events);
+      setState(() {});
+    }
+  }
+
+  Future<void> _saveEvents() async {
+    savedEvents = Map.from(_events);
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = jsonEncode(
+      _events.map((key, value) => MapEntry(key.toIso8601String(), value)),
+    );
+    await prefs.setString('calendar_events', encoded);
+    await _loadEvents();
   }
 
   void _showAddEventDialog() {
@@ -79,6 +144,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   setState(() {
                     _events[_selectedDay!] = [...?_events[_selectedDay], title];
                   });
+                  await _saveEvents();
 
                   final reminderTime = DateTime(
                     _selectedDay!.year,
@@ -101,8 +167,6 @@ class _CalendarPageState extends State<CalendarPage> {
                             'Reminder notifications for calendar events',
                       ),
                     ),
-                    uiLocalNotificationDateInterpretation:
-                        UILocalNotificationDateInterpretation.absoluteTime,
                     matchDateTimeComponents: DateTimeComponents.time,
                     androidScheduleMode:
                         AndroidScheduleMode.exactAllowWhileIdle,
@@ -119,6 +183,22 @@ class _CalendarPageState extends State<CalendarPage> {
 
   List<String> _getEventsForDay(DateTime day) => _events[day] ?? [];
 
+  void _deleteEvent(int index) async {
+    if (_selectedDay != null && _events[_selectedDay!] != null) {
+      setState(() {
+        _events[_selectedDay!]!.removeAt(index);
+        if (_events[_selectedDay!]!.isEmpty) {
+          _events.remove(_selectedDay!);
+        }
+      });
+      await _saveEvents();
+    }
+  }
+
+  Future<void> _refreshEvents() async {
+    await _loadEvents();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,42 +208,56 @@ class _CalendarPageState extends State<CalendarPage> {
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
       ),
-      body: Column(
-        children: [
-          TableCalendar(
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-            eventLoader: _getEventsForDay,
-            calendarStyle: const CalendarStyle(
-              selectedDecoration: BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
+      body: RefreshIndicator(
+        onRefresh: _refreshEvents,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              TableCalendar(
+                firstDay: DateTime.utc(2020, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                focusedDay: _focusedDay,
+                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
+                },
+                eventLoader: _getEventsForDay,
+                calendarStyle: const CalendarStyle(
+                  selectedDecoration: BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                  todayDecoration: BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                headerStyle: const HeaderStyle(
+                  titleCentered: true,
+                  formatButtonVisible: false,
+                ),
               ),
-              todayDecoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
-              ),
-            ),
-            headerStyle: const HeaderStyle(
-              titleCentered: true,
-              formatButtonVisible: false,
-            ),
+              const SizedBox(height: 10),
+              if (_selectedDay != null &&
+                  _getEventsForDay(_selectedDay!).isNotEmpty)
+                ..._getEventsForDay(_selectedDay!).asMap().entries.map(
+                  (entry) => ListTile(
+                    title: Text(entry.value),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.redAccent),
+                      onPressed: () {
+                        _deleteEvent(entry.key);
+                      },
+                    ),
+                  ),
+                ),
+            ],
           ),
-          const SizedBox(height: 10),
-          if (_selectedDay != null &&
-              _getEventsForDay(_selectedDay!).isNotEmpty)
-            ..._getEventsForDay(
-              _selectedDay!,
-            ).map((event) => ListTile(title: Text(event))),
-        ],
+        ),
       ),
     );
   }
