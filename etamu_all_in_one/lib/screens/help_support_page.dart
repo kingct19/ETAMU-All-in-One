@@ -12,9 +12,13 @@ class HelpSupportPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Help & Support',
-          style: TextStyle(fontFamily: 'BreeSerif'),
+          style: TextStyle(
+            fontFamily: 'BreeSerif',
+            color: Color.fromARGB(221, 255, 255, 255),
+          ),
         ),
         backgroundColor: primary,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

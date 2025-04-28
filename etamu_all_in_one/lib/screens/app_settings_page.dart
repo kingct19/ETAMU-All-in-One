@@ -47,9 +47,13 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
       appBar: AppBar(
         title: const Text(
           'App Settings',
-          style: TextStyle(fontFamily: 'BreeSerif'),
+          style: TextStyle(
+            fontFamily: 'BreeSerif',
+            color: Color.fromARGB(221, 255, 255, 255),
+          ),
         ),
         backgroundColor: primary,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
