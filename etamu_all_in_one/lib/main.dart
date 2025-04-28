@@ -8,6 +8,9 @@ import 'screens/login.dart';
 import 'screens/home.dart';
 import 'screens/guest_home.dart';
 import 'widgets/splash_screen.dart';
+import 'screens/app_settings_page.dart';
+import 'screens/help_support_page.dart';
+import 'screens/edit_profile_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +62,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         '/guest': (context) => const GuestHomePage(),
         '/student_home': (context) => const Home(role: 'student'),
         '/faculty_home': (context) => const Home(role: 'faculty'),
+        '/app_settings': (context) => const AppSettingsPage(),
+        '/help_support': (context) => const HelpSupportPage(),
+        '/edit_profile_page': (context) => const EditProfilePage(),
       },
     );
   }

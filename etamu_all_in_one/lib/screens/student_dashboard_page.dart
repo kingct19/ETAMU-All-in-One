@@ -12,6 +12,7 @@ class StudentDashboardPage extends StatefulWidget {
 }
 
 class _StudentDashboardPageState extends State<StudentDashboardPage> {
+  String _userName = 'Lion';
   final List<Map<String, dynamic>> _studentTools = const [
     {
       'title': 'myLEO',
@@ -55,6 +56,22 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
     super.initState();
     _loadEvents();
     loadUpcomingEvents();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedName = prefs.getString('user_display_name');
+    if (savedName != null && savedName.isNotEmpty) {
+      setState(() {
+        _userName = savedName;
+      });
+    } else {
+      final user = FirebaseAuth.instance.currentUser;
+      setState(() {
+        _userName = user?.displayName ?? 'Lion';
+      });
+    }
   }
 
   @override
@@ -192,7 +209,7 @@ class _StudentDashboardPageState extends State<StudentDashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${_getGreeting()}, ${_getUserName()} 👋',
+                  '${_getGreeting()}, $_userName 👋',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

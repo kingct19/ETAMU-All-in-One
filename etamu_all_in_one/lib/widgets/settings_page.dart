@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,7 +14,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   File? _profileImage;
   String _userName = '';
-  String? _profileImageUrl;
   final TextEditingController _nameController = TextEditingController();
   final picker = ImagePicker();
 
@@ -27,94 +24,54 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _loadProfile() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
     final prefs = await SharedPreferences.getInstance();
-
-    if (uid != null) {
-      try {
-        final doc =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
-        if (doc.exists) {
-          setState(() {
-            _userName = doc['name'] ?? 'Lion';
-            final imageUrl = doc['profileImageUrl'];
-            if (imageUrl != null && imageUrl.isNotEmpty) {
-              _profileImageUrl = imageUrl;
-            } else {
-              _profileImageUrl = null;
-            }
-            _nameController.text = _userName;
-          });
-        } else {
-          // Fallback to local
-          setState(() {
-            _userName = prefs.getString('userName_$uid') ?? 'Lion';
-            _profileImageUrl = null;
-            _nameController.text = _userName;
-          });
-        }
-      } catch (e) {
-        // Error fallback
-        setState(() {
-          _userName = prefs.getString('userName_$uid') ?? 'Lion';
-          _profileImageUrl = null;
-          _nameController.text = _userName;
-        });
-      }
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final storedName = prefs.getString('userName_$uid') ?? 'Lion';
+    setState(() {
+      _userName = storedName;
+      _nameController.text = _userName;
+    });
+    final imagePath = prefs.getString('userImage_$uid');
+    if (imagePath != null && File(imagePath).existsSync()) {
+      setState(() {
+        _profileImage = File(imagePath);
+      });
+    }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null &&
+        (user.displayName == null || user.displayName!.isEmpty)) {
+      await user.updateDisplayName(_userName);
     }
   }
 
   Future<void> _saveName(String name) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
     final prefs = await SharedPreferences.getInstance();
-
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'name': name,
-        'profileImageUrl': _profileImageUrl ?? '',
-      }, SetOptions(merge: true));
       await prefs.setString('userName_$uid', name);
     }
-
     setState(() {
       _userName = name;
     });
-
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await user.updateDisplayName(name);
     }
   }
 
+  String _getUserName() {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.displayName ?? _userName;
+  }
+
   Future<void> _pickImage() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
-
     if (picked != null) {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
+      setState(() => _profileImage = File(picked.path));
       final prefs = await SharedPreferences.getInstance();
-      final file = File(picked.path);
-
-      setState(() {
-        _profileImage = file;
-      });
-
+      final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null) {
-        final ref = FirebaseStorage.instance.ref().child(
-          'profilePics/$uid.jpg',
-        );
-        await ref.putFile(file);
-        final downloadUrl = await ref.getDownloadURL();
-
-        await FirebaseFirestore.instance.collection('users').doc(uid).set({
-          'profileImageUrl': downloadUrl,
-          'name': _userName,
-        }, SetOptions(merge: true));
-
-        await prefs.setString('userImage_$uid', downloadUrl);
-
-        setState(() {
-          _profileImageUrl = downloadUrl;
-        });
+        await prefs.setString('userImage_$uid', picked.path);
       }
     }
   }
@@ -140,10 +97,10 @@ class _SettingsPageState extends State<SettingsPage> {
     );
 
     if (confirm == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('lastRole');
+      await SharedPreferences.getInstance().then(
+        (prefs) => prefs.remove('lastRole'),
+      );
       await FirebaseAuth.instance.signOut();
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('You have been logged out.')),
@@ -164,26 +121,21 @@ class _SettingsPageState extends State<SettingsPage> {
       color: Colors.black87,
     );
 
-    ImageProvider profileImageProvider;
-    if (_profileImage != null) {
-      profileImageProvider = FileImage(_profileImage!);
-    } else if (_profileImageUrl != null && _profileImageUrl!.isNotEmpty) {
-      profileImageProvider = NetworkImage(_profileImageUrl!);
-    } else {
-      profileImageProvider = const AssetImage('assets/images/etamu_logo.jpg');
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(top: 80),
+          padding: EdgeInsets.only(top: 80),
           child: Column(
             children: [
               GestureDetector(
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 54,
-                  backgroundImage: profileImageProvider,
+                  backgroundImage:
+                      _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : const AssetImage('assets/images/etamu_logo.jpg')
+                              as ImageProvider,
                   child: Align(
                     alignment: Alignment.bottomRight,
                     child: CircleAvatar(
@@ -220,41 +172,171 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    _buildSettingsCard(
-                      icon: Icons.person,
-                      title: 'Edit Profile',
-                      onTap: () {},
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.person,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Edit Profile',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              final controller = TextEditingController(
+                                text: _userName,
+                              );
+                              return AlertDialog(
+                                title: const Text('Edit Profile Name'),
+                                content: TextField(
+                                  controller: controller,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Enter your name',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _saveName(controller.text);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Save'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
-                    _buildSettingsCard(
-                      icon: Icons.settings,
-                      title: 'App Settings',
-                      onTap: () {},
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.settings,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'App Settings',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/app_settings');
+                        },
+                      ),
                     ),
-                    _buildSettingsCard(
-                      icon: Icons.help_outline,
-                      title: 'Help & Support',
-                      onTap: () {},
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.help_outline,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Help & Support',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/help_support');
+                        },
+                      ),
                     ),
                     const SizedBox(height: 12),
                     const Divider(thickness: 1),
                     const SizedBox(height: 12),
-                    _buildSettingsCard(
-                      icon: Icons.info_outline,
-                      title: 'About ETAMU',
-                      onTap: () {
-                        showAboutDialog(
-                          context: context,
-                          applicationName: 'ETAMU All-in-One',
-                          applicationVersion: '1.0.0',
-                          applicationLegalese:
-                              '© 2025 East Texas A&M University',
-                        );
-                      },
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: Icon(
+                          Icons.info_outline,
+                          size: 28,
+                          color: secondary,
+                        ),
+                        title: Text(
+                          'About ETAMU',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () {
+                          showAboutDialog(
+                            context: context,
+                            applicationName: 'ETAMU All-in-One',
+                            applicationVersion: '1.0.0',
+                            applicationLegalese:
+                                '© 2025 East Texas A&M University',
+                          );
+                        },
+                      ),
                     ),
-                    _buildSettingsCard(
-                      icon: Icons.logout,
-                      title: 'Logout',
-                      onTap: () => _logout(context),
+                    Card(
+                      color: primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        leading: const Icon(
+                          Icons.logout,
+                          size: 28,
+                          color: Colors.red,
+                        ),
+                        title: Text(
+                          'Logout',
+                          style: optionTextStyle.copyWith(color: Colors.white),
+                        ),
+                        onTap: () => _logout(context),
+                      ),
                     ),
                   ],
                 ),
@@ -263,32 +345,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsCard({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      color: const Color(0xFF002147),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Icon(icon, size: 28, color: Colors.white),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontFamily: 'BreeSerif',
-            fontSize: 18,
-            color: Colors.white,
-          ),
-        ),
-        onTap: onTap,
       ),
     );
   }
