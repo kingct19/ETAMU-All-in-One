@@ -80,20 +80,6 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.lock, color: secondary),
-            title: const Text(
-              'Privacy Settings',
-              style: TextStyle(fontFamily: 'BreeSerif'),
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PrivacySettingsPage()),
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
             leading: const Icon(Icons.language, color: secondary),
             title: const Text(
               'Language',
